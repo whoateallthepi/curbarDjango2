@@ -1,0 +1,46 @@
+{% extends "weather/base.html" %}
+
+{% block title %}Weather search{% endblock %}
+
+{% block content %}
+  {% if date_from %}
+    <h1>Weather totals &ndash; {{ station }}</h1>
+     <h3> {{ date_from|date:"D, j M, Y" }} to {{ date_to|date:"D, j M, Y"  }} </h3>
+     <h4>Temperature</h4>
+     <p>Min: {{ result.temperature_min }}C at {{ result.temperature_min_time|date:"g:iA"}}
+        on {{ result.temperature_min_time|date:"D, j M, Y" }}<br>
+        Max: {{ result.temperature_max }}C at {{ result.temperature_max_time|date:"g:iA" }} 
+        on {{ result.temperature_max_time|date:"D, j M, Y" }}
+      </p>
+      <h4>Pressure</h4>  
+      <p>Min: {{ result.bar_min }}mb at {{ result.bar_min_time|date:"g:iA" }}
+         on {{ result.bar_min_time|date:"D, j M, Y" }} <br>
+         Max: {{ result.bar_max }}mb at {{ result.bar_max_time|date:"g:iA" }}
+         on {{ result.bar_max_time|date:"D, j M, Y" }} </p>
+      <h4>Humidity</h4>  
+      <p>Min: {{ result.humidity_min }}% at {{ result.humidity_min_time|date:"g:iA" }}
+         on {{ result.humidity_min_time|date:"D, j M, Y" }}<br>
+         Max: {{ result.humidity_max }}mb at {{ result.humidity_max_time|date:"g:iA" }}
+         on {{result.humidity_max_time|date:"D, j M, Y" }} </p>     
+      <h4>Rain</h4> 
+      <p>Heaviest rain: {{ result.rain_1h_max }}mm/h at {{ result.rain_1h_max_time|date:"g:iA" }}
+         on {{ result.rain_1h_max_time|date:"D, j M, Y" }}<br>
+         Period total: {{ result.rain_total }}mm <br> </p> 
+      <h4>Wind</h4> 
+      <p>Max. wind: {{ result.wind_max }}km/h at {{ result.wind_max_time|date:"g:iA" }} 
+         on {{ result.wind_max_time|date:"D, j M, Y" }} from
+         {{result.wind_max_dir }} degrees ({{result.wind_max_rose }})<br>
+         Max 2m average wind: {{ result.wind_avg2m_max }} km/h 
+         at {{ result.wind_avg2m_max_time|date:"g:iA" }} 
+         on {{ result.wind_avg2m_max_time|date:"D, j M, Y" }} 
+         from {{ result.wind_avg2m_dir }} degrees 
+         ({{ result.wind_avg2m_rose }}) 
+      </p>
+  {% else %}
+    <h1> Search for readings </h1>  
+    <form method="get"> 
+    {{ form.as_p }}
+    <input type="submit" value="Search"> 
+  </form>
+  {% endif %}
+{% endblock %}

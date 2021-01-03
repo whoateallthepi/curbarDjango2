@@ -1,0 +1,11 @@
+
+{% extends "weather/base.html" %}
+
+{% block title %}{{ 'API response' }}{% endblock %}
+
+{% block content %}
+  <p>
+      {{ forecast_response }}
+  </p>
+
+  {% endblock %}

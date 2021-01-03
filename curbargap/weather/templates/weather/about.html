@@ -1,0 +1,33 @@
+{% extends "weather/base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+  <h1>About</h1>
+  <p>
+    <img src='/media/images/2021/01/Station.jpg' class='rounded float-right 
+    img-fluid' alt='weather station'>
+    
+    curbargap.info was developed to show the data from our 'homebrew' farm 
+    weather station. In this intial version you can 
+    <a href ='/weather/reading/totals'> search weather 
+    records</a> for Curbar, as well as some data from previous sitings just
+    down the valley in Grindleford, and Blackheath in London. 
+
+</p>
+    <p>I use this data every day on the farm. So I hope it is of some 
+     interest elsewhere
+
+    </p>
+    <p> You can also view <a href='/weather/forecast/summary/351418'>
+        summary</a> and <a href='/weather/forecast/full/511'>
+        full weather forecasts</a> for the area. These come from the 
+    Met Office's 'Datapoint' API. These are something else I use daily.
+    </p>
+    <p>
+        Coming soon we should have some weather satellite pictures from another
+        DIY project &ndash; our NOAA satellite receiver.
+    </p>
+  </p>
+ 
+  {% endblock %}

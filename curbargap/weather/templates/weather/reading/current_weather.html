@@ -1,0 +1,12 @@
+<h5 class = 'text-light text-center'> Current weather at {{ current_weather.station }} </h5>
+<p class = 'text-light'> Temp: {{ current_weather.temperature }}C<br>
+    Humidity: {{ current_weather.humidity }}%<br>
+    Bar (corrected): {{ current_weather.bar_corrected}}mb<br>
+    Wind: {{ current_weather.wind_speed }}km/h from {{ current_weather.wind_dir }} degrees<br>
+    Rain in last hour: {{ current_weather.rain_1h }}mm<br>
+    Rain today: {{ current_weather.rain_today}}mm
+</p>
+<p class='text-light fst-italic'>
+    At {{ current_weather.reading_time|date:"g:iA" }} 
+    on {{ current_weather.reading_time|date:"D, d M, Y" }}
+</p>

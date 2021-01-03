@@ -1,0 +1,30 @@
+
+{% extends "weather/base.html" %}
+
+{% block title %}{{ reading.reading_time }}{% endblock %}
+
+{% block content %}
+  <h1>{{ reading.station }}</h1>
+  <h2>Weather on {{ reading.reading_time }}</h2>
+  <p>
+    <h4>Atmosphere</h4>
+    Temperature: {{ reading.temperature}} C <br>
+    Humidity: {{ reading.humidity }} % <br>
+    Pressure: {{ reading.bar_corrected}} mb (corrected to sea level) <br>   
+    <h4>Precipitation</h4>
+    Rain (last hour): {{ reading.rain_1h}} mm <br>
+    Total Rain today: {{ reading.rain_today}} mm <br>
+    <h4>Wind</h4>
+    <h5>Continuous</h5>
+    Speed: {{ reading.wind_speed}} km/h <br>
+    Direction: {{ reading.wind_dir}} degrees <br>
+    Two-minute average: {{ reading.wind_speed_avg2m}} km/h<br>
+    <h5>Gusts</h5>
+    Direction: {{ reading.wind_gust_dir }} degrees <br>
+    Speed {{ reading.wind_gust}} km/h <br>
+    10 minute peak: {{ reading.wind_gust_10m}} km/h <br>
+    Direction (10 minute peak): {{ reading.wind_gust_dir_10m}} degrees
+  </p>
+ <p> Summary: {{ reading.summary }}</p>
+
+  {% endblock %}

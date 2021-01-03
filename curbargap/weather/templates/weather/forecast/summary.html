@@ -1,0 +1,20 @@
+
+{% extends "weather/base.html" %}
+{% load render_table from django_tables2 %}
+{% block title %} {{ 'Weather Forecast' }} {% endblock %}
+
+{% block content %}
+  {# There must be a way of iterating the below #}
+  <h4> {{ 'Today' }} </h4>
+  <p class = 'small'>Issued: {{ forecast_time|date:"D M d H:i A" }}</p>
+    {% render_table tables.0 %}
+  
+  <h4> {{ 'Tomorrow' }} </h4>
+    {% render_table tables.1 %}
+  
+    <h4> {{ dates.2|date:"l"  }} </h4>
+    {% render_table tables.2 %}
+ 
+    
+
+{% endblock %}

@@ -1,0 +1,14 @@
+
+{% extends "weather/base.html" %}
+{% block title %} {{ 'Weather Forecast' }} {% endblock %}
+
+{% block content %}
+  {#  #}
+  <h1> Forecast for {{ region }} region</h1>
+  <p class='small'> Issued: {{ issued|date:"D M d H:i A" }} </p>
+  {% for section in forecast %}
+  
+  <h5> {{ section.head }} </h5>
+  <p>  {{ section.text }} </p>
+  {% endfor %}
+{% endblock %}
