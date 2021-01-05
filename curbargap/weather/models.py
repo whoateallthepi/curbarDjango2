@@ -12,11 +12,11 @@ from django.urls import reverse
 class Station(models.Model):
    name = models.CharField('Station Name', max_length=20)
    latitude = models.DecimalField('Station Latitude', max_digits=9, decimal_places=6)
-   longitude = models.DecimalField('Station Latitude', max_digits=9, decimal_places=6)
+   longitude = models.DecimalField('Station Longitude', max_digits=9, decimal_places=6)
    altitude = models.IntegerField('Station Altitude')
    type = models.CharField('Station Type', max_length=3)
-   RFid = models.CharField('Station RFid', max_length=2)
-   phone = models.IntegerField('Station Phone')
+   RFid = models.CharField('Station RFid', max_length=2, blank=True, null=True)
+   phone = models.IntegerField('Station Phone', blank=True, null=True)
 
    def __str__(self):
         return self.name
@@ -39,9 +39,9 @@ class Reading(models.Model):
    wind_gust_dir_10m = models.IntegerField('Wind Gust Direction 10m', validators=[MaxValueValidator(360), MinValueValidator(0)])
    humidity = models.DecimalField('Relative Humidity', max_digits=4, decimal_places=1)
    temperature = models.DecimalField('Temperature Centigrade', max_digits=3, decimal_places=1)
-   rain_1h = models.DecimalField('Rain Past Hour', max_digits=6, decimal_places=2)
-   rain_today = models.DecimalField('Rain Today', max_digits=6, decimal_places=2)
-   rain_since_last = models.DecimalField('Rain Since Last Reading', max_digits=6, decimal_places=2)
+   rain_1h = models.DecimalField('Rain Past Hour', max_digits=6, decimal_places=2, blank=True, null=True)
+   rain_today = models.DecimalField('Rain Today', max_digits=6, decimal_places=2, blank=True, null=True)
+   rain_since_last = models.DecimalField('Rain Since Last Reading', max_digits=6, decimal_places=2, blank=True, null=True)
    bar_uncorrected = models.FloatField('Uncorrected pressure')
    bar_corrected =  models.DecimalField('Barometer (corrected)', max_digits=5, decimal_places=1)
    battery = battery= models.DecimalField('Battery', max_digits=4, decimal_places=2, default=0, blank=True, null=True)
