@@ -5,8 +5,9 @@
 
 {% block content %}
   {# There must be a way of iterating the below #}
-  <h4> {{ 'Today' }} </h4>
-  <p class = 'small'>Issued: {{ forecast_time|date:"D M d H:i A" }}</p>
+  <h3>Summary forecast for {{ station_name|title }}</h3>
+  <p class = 'small'>Issued: {{ forecast_time|date:"D M d H:i A" }}</p><h4> {{ 'Today' }} </h4>
+  
     {% render_table tables.0 %}
   
   <h4> {{ 'Tomorrow' }} </h4>

@@ -68,6 +68,7 @@ def forecast_view (request, station_id=351418):
     # This is used for the summary forecast 
     #
     f = Forecast.objects.filter(location__exact=station_id).latest('forecast_time')
+    station_name = f.name
     forecast_time = f.forecast_time
     d = Day.objects.filter(forecast__exact = f).order_by('date') 
     tables = [] # create a list of timestep objects
@@ -93,6 +94,7 @@ def forecast_view (request, station_id=351418):
                     {'tables' : tables,
                     'dates' : dates,
                     'forecast_time' : forecast_time,
+                    'station_name' : station_name,
                     }
                    )
 
