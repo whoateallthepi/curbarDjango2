@@ -74,8 +74,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'curbargap.wsgi.application'
 
-SECRET_KEY = 'jipubnz10*z37zwtb^%=69lg2!=zsk%e-_p54i1u(pb3^j+_^5'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
