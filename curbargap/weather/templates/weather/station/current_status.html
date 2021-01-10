@@ -1,0 +1,10 @@
+<h5 class = 'text-light text-center'> System is {{ status_full|lower }}</h5>
+<p class='text-light fst-italic small text-center'>
+    Updated {{ current_status.created|date:"g:iA" }} 
+    on {{ current_status.created|date:"D, d M, Y" }}
+</p>
+<p class = 'text-light'>
+   <span class='fw-bold'>{{current_status.headline}} &ndash; </span>
+   {{ current_status.summary}}
+</p>
+ 

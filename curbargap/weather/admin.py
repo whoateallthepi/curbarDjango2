@@ -9,12 +9,18 @@ from .models import Day
 from .models import Timestep
 from .models import Symbol
 from .models import Image
+from .models import Status
 
 #admin.site.register(Station)
 #admin.site.register(Reading)
 @admin.register(Station)
 class StationAdmin(admin.ModelAdmin):
   list_display = ('name', 'altitude', 'type')
+
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+  list_display = ('station', 'status', 'headline', 'created')
+
 @admin.register(Reading)
 class ReadingAdmin(admin.ModelAdmin):
   list_display = ('station_id', 'reading_time' )

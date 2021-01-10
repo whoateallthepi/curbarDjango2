@@ -6,16 +6,17 @@
 {% block content %}
   {# There must be a way of iterating the below #}
   <h3>Summary forecast for {{ station_name|title }}</h3>
+  <div class="table-responsive">
   <p class = 'small'>Issued: {{ forecast_time|date:"D M d H:i A" }}</p><h4> {{ 'Today' }} </h4>
   
     {% render_table tables.0 %}
-  
+ 
   <h4> {{ 'Tomorrow' }} </h4>
     {% render_table tables.1 %}
   
-    <h4> {{ dates.2|date:"l"  }} </h4>
+  <h4> {{ dates.2|date:"l"  }} </h4>
     {% render_table tables.2 %}
- 
-    
+   
+  </div>
 
 {% endblock %}

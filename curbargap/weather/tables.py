@@ -9,7 +9,7 @@ class ImageColumn(tables.Column):
             wt = get_weather(value) # revisit this weird reverse lookup
             
             return format_html(
-               '<img src="{url}" height="60px", width = "60px", class = "weather_symbol", alt = "{wt}", title = "{wt}" >',
+               '<img src="{url}" height="40px", width = "40px", class = "weather_symbol", alt = "{wt}", title = "{wt}" >',
                 url=(settings.MEDIA_URL + value),
                 wt=(wt)
                 )
@@ -22,13 +22,15 @@ class TimestepTable(tables.Table):
     
     date_header = 'date header'
     step_time = tables.DateTimeColumn(format ='gA')
-    wind_direction = tables.Column(verbose_name = 'Rose')
+    wind_direction = tables.Column(verbose_name = 'From')
+    feels_like_temperature = tables.Column(verbose_name = 'Feel')
     #symbol = tables.Column(accessor='get_symbol',
     #                    verbose_name = 'Symbol')
     symbol = ImageColumn(accessor='get_symbol',
                            verbose_name = 'Weather')
                     
     class Meta:
+        attrs = {"class": "table"}
         model = Timestep
         template_name = 'django_tables2/bootstrap4.html'
         fields = ('step_time',
@@ -40,3 +42,5 @@ class TimestepTable(tables.Table):
                   'wind_gust',
                   'wind_direction',
                   'uv',)
+                  
+        

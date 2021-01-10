@@ -1,6 +1,8 @@
 {# Load the tag library #}
 
 {% load weather_tags %}
+{% load station_tags %}
+
 {% load static %}
 <!DOCTYPE html>
 <html lan="en">
@@ -29,9 +31,10 @@
     {% endblock %}
   </div>
 
-  <div id='sidebar-1' class = 'col-4 bg-secondary p-2'>
+  <div id='sidebar-1' class = 'col-sm-4 bg-secondary p-2'>
        
           {% show_latest_reading %}
+          {% show_latest_status %}
   </div>
 </div>
 </div>

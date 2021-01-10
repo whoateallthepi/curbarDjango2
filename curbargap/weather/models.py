@@ -23,7 +23,36 @@ class Station(models.Model):
 
    def get_absolute_url(self):
        return reverse ('weather:station_detail',
-                       args=[self.id])     
+                       args=[self.id])
+
+class Status(models.Model):
+      FULLY_OPERATIONAL = 1
+      MINOR_FAULT = 2
+      SOME_READINGS_AFFECTED = 3
+      NO_READINGS_AVAILABLE = 4
+      OUT_OF_SERVICE = 5
+      STATUS = (
+         (FULLY_OPERATIONAL,  ('Fully operational')),
+         (MINOR_FAULT, ('Minor service fault')),
+         (SOME_READINGS_AFFECTED, ('Some readings affected')),
+         (NO_READINGS_AVAILABLE, ('No readings availabe')),
+         (OUT_OF_SERVICE, ('Permanently out of service')),
+      )
+
+      station = models.ForeignKey(Station,on_delete=models.CASCADE)
+      headline = models.CharField('Station status', max_length=20)
+      status = models.PositiveSmallIntegerField(
+         choices=STATUS,
+         default=FULLY_OPERATIONAL,
+      )
+      summary = models.TextField()
+      created = models.DateTimeField(auto_now_add=True)
+      updated = models.DateTimeField(auto_now=True)
+      
+      class Meta:
+         ordering = ('-created',)
+      def __str__(self):
+         return (self.headline + str(self.status)+ str(self.created))  
 
 #Readings
 class Reading(models.Model):
