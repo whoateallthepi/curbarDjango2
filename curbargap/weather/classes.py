@@ -29,7 +29,7 @@ class WeatherSummary(object):
         return reading
          
     def rain_1h (self):
-        query = rain_1h_max = self.date_station_query.latest('rain_1h')
+        query = rain_1h_max = self.date_station_query.exclude(rain_1h__isnull=True).latest('rain_1h')
         rain_1h_max = query.rain_1h
         rain_1h_time = query.reading_time   
         return { 'rain_1h_max' : rain_1h_max, 
