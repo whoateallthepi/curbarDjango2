@@ -58,7 +58,9 @@ ROOT_URLCONF = 'curbargap.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'weather/templates/weather')],  # to load 404.html etc
+        #'DIRS': [os.path.join(BASE_DIR, 'weather/templates/weather')],  # to load 404.html etc
+        'DIRS': [os.path.join(BASE_DIR, 'curbargap/templates')],  # to load base.html, navbar.html, 404.html etc
+                                                                  # from project
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

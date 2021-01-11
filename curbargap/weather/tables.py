@@ -9,7 +9,7 @@ class ImageColumn(tables.Column):
             wt = get_weather(value) # revisit this weird reverse lookup
             
             return format_html(
-               '<img src="{url}" height="40px", width = "40px", class = "weather_symbol", alt = "{wt}", title = "{wt}" >',
+               '<img src="{url}" height="60px", width = "60px", class = "weather_symbol", alt = "{wt}", title = "{wt}" >',
                 url=(settings.MEDIA_URL + value),
                 wt=(wt)
                 )
