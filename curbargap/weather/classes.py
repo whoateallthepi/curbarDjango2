@@ -35,10 +35,11 @@ class WeatherSummary(object):
         return { 'rain_1h_max' : rain_1h_max, 
                   'rain_1h_max_time' : rain_1h_time, } 
     def humidity (self):
-        query = self.date_station_query.latest('humidity')
+        query_base = self.date_station_query.exclude(humidity__isnull=True)
+        query = query_base.latest('humidity')
         humidity_max = query.humidity
         humidity_max_time = query.reading_time  
-        query2 = self.date_station_query.earliest('humidity')
+        query2 = query_base.earliest('humidity')
         humidity_min = query2.humidity
         humidity_min_time = query2.reading_time 
         return { 'humidity_max' : humidity_max, 

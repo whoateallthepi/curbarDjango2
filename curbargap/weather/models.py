@@ -66,7 +66,7 @@ class Reading(models.Model):
    wind_dir_avg2m = models.IntegerField('Wind Direction 2m Average', validators=[MaxValueValidator(360), MinValueValidator(0)], default=0)
    wind_gust_10m = models.DecimalField('Wind Gust 10 minutes', max_digits=4, decimal_places=1)
    wind_gust_dir_10m = models.IntegerField('Wind Gust Direction 10m', validators=[MaxValueValidator(360), MinValueValidator(0)])
-   humidity = models.DecimalField('Relative Humidity', max_digits=4, decimal_places=1)
+   humidity = models.DecimalField('Relative Humidity', max_digits=4, decimal_places=1, blank=True, null=True)
    temperature = models.DecimalField('Temperature Centigrade', max_digits=3, decimal_places=1)
    rain_1h = models.DecimalField('Rain Past Hour', max_digits=6, decimal_places=2, blank=True, null=True)
    rain_today = models.DecimalField('Rain Today', max_digits=6, decimal_places=2, blank=True, null=True)
