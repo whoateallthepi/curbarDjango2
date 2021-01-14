@@ -22,7 +22,8 @@ from weather import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('weather/', include('weather.urls', namespace='weather')),
-    path ('', views.home_view, name = 'home view')
+    path ('', views.home_view, name = 'home view'),
+    path('blog/', include('blog.urls', namespace='blog'),)
 ]
 
 if settings.DEBUG:
