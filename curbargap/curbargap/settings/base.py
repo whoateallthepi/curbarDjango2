@@ -142,5 +142,6 @@ THUMBNAIL_ALIASES = {
     '': {
         'blog_thumbnail': {'size': (100, 100), 'crop': True},
         'blog_standard': {'size': (200,0), 'crop': False},
+        'blog_sidebar' : {'size' : (150,0), 'crop': False },
     },
 }

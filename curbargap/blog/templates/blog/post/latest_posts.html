@@ -1,0 +1,13 @@
+<h4 class = 'text-light text-center'> Blog latest</h4>
+{% load thumbnail %}
+<a href="{{ latest_posts.0.get_absolute_url }}">
+<img src="{{ latest_posts.0.image|thumbnail_url:'blog_sidebar' }}"
+     class="img-fluid rounded mx-auto d-block mb-2" 
+     alt ="{{ latest_posts.0.image_title }} " title ="{{ latest_posts.0.image_title }}">
+</a>
+<div class="list-group  mb-3 border-bottom pb-3">
+    {% for post in latest_posts %}
+       <a href="{{ post.get_absolute_url }}" class="text-secondary list-group-item bg-light"> 
+           {{ post.title }} </a>
+        {% endfor %}
+</div>

@@ -1,5 +1,7 @@
 from django import template
 from ..models import Reading
+from blog.models import Post
+
 from ..classes import LatestForecast, LatestReading
 
 register = template.Library()
@@ -19,4 +21,5 @@ def show_latest_forecast(station=351418):
              'weather_type'   : lf.weather_type,
              'latest_reading' : lr.reading,
              
-    }    
+    }
+
