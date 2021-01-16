@@ -10,8 +10,7 @@ from django.contrib.auth.models import User
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='published')
-
-
+  
 class Post(models.Model):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
@@ -33,7 +32,13 @@ class Post(models.Model):
 
     objects = models.Manager() # The default manager.
     published = PublishedManager() # Our custom manager.
-
+    
+    image = models.ImageField(upload_to='images/blogImages%Y/%m', blank=True, null=True, 
+                              default='images/Default.jpg')
+    
+    caption = models.CharField(blank=True, null=True, max_length=40)
+    image_title = models.CharField(blank=True, null=True, max_length=20)
+    
     class Meta:
         ordering = ('-publish',)
 
@@ -44,5 +49,7 @@ class Post(models.Model):
         return reverse('blog:post_detail',
                        args=[self.publish.year,
                              self.publish.month,
-                             self.publish.day, self.slug])
+                             self.publish.day, 
+                             self.slug])
 
+                   

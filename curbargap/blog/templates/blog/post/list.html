@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Blog {% endblock %}
+
+{% block content %}
+
+<h1>Weather Blog</h1>
+{% for post in posts %}
+<div class="border-bottom mb-4 pb-2">
+<h3 >
+    <a href="{{ post.get_absolute_url }}">
+        {{ post.title }}
+    </a>
+</h3>
+<p class="small fst-italic text-right">
+    Published {{ post.publish }} by {{ post.author }}
+</p>
+<p>
+    
+    {% load thumbnail %}
+    <img src="{{ post.image|thumbnail_url:'blog_thumbnail' }}" class="img-thumbnail float-end" 
+         alt ="{{ post.image_title }} " title ="{{ post.image_title }}">
+    {{ post.body|truncatewords:30|linebreaks }}
+    
+</p>
+</div>
+{% endfor %}
+{% include "pagination.html" with page=posts %}
+{% endblock %}

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'django_filters',
     'django_tables2',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,11 @@ STATIC_URL = os.path.join(BASE_DIR,'static/')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'blog_thumbnail': {'size': (100, 100), 'crop': True},
+        'blog_standard': {'size': (200,0), 'crop': False},
+        'blog_sidebar' : {'size' : (150,0), 'crop': False },
+    },
+}

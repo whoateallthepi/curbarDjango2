@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %} {{ post.title }}{% endblock %}
+
+{% block content %}
+
+<h1> {{ post.title }} </h1>
+<p>
+    Published {{ post.publish }} by {{ post.author }}
+</p>
+<figure class="figure float-end border p-2 m-1">
+    {% load thumbnail %}
+    <a href ="{{ post.image.url }}">
+        <img src="{{ post.image|thumbnail_url:'blog_standard' }}"
+         class="figure-img img-fluid rounded" 
+             alt ="{{ post.image_title }} " title ="{{ post.image_title }}">
+        {% if post.caption %}
+             <figcaption class="figure-caption text-end">{{ post.caption }} </figcaption>   
+        {% endif %}
+    </a>
+</figure>
+<p>
+{{ post.body|linebreaks }}
+</p>
+
+{% endblock %}
