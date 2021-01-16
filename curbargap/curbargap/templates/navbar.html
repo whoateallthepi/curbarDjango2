@@ -1,8 +1,10 @@
 <!-- Image and text -->
+{% load weather_tags %}
 <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
     <div class="container">
-      <a class="navbar-brand" href="/">
-                curbargap.info
+      {% show_latest_forecast %}
+      <a class="navbar-brand" href="/">    
+        curbargap.info
       </a>
       <button class='navbar-toggler' type='button' data-bs-toggle='collapse' 
               data-bs-target='#navbarCollapseLinks'  aria-expanded='false' aria-label='Toggle Navigation'>

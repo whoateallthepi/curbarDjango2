@@ -1,10 +1,30 @@
 from django.db.models import Avg, Max, Min, Sum
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
-from .models import Reading
-from .utils import rose
+from .models import Reading, Forecast, Timestep, Day, Symbol
+from .utils import rose, get_symbol
 from datetime import timedelta
 
+class LatestForecast (object):
+    # Would be sensible to rewrite with forecast_view 
+    def __init__(self, station=351418): 
+        f = Forecast.objects.filter(location__exact=station).latest('forecast_time')
+        station_name = f.name
+        forecast_time = f.forecast_time
+        d = Day.objects.filter(forecast__exact = f).filter(date__date=(timezone.now())) 
+        past_3hrs = timezone.now() + timedelta(hours=-3)
+        timestep =  Timestep.objects.filter(day__in=d).filter(step_time__gt=past_3hrs).earliest('step_time')
+        #breakpoint()
+        symbol = get_object_or_404(Symbol, symbol_key=timestep.weather) 
+        self.symbol=symbol.symbol_image.url
+        self.symbol_key = symbol.symbol_key
+        self.weather_type = symbol.weather_type
 
+class LatestReading(object):
+    def __init__(self, station=3):
+        self.reading = (Reading.objects.filter(station__exact=station).latest('reading_time'))         
+        
 class WeatherSummary(object):
     'Class to produce summary reports for a time period'
     def __init__(self, station, date_from, date_to):

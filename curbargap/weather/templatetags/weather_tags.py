@@ -1,5 +1,6 @@
 from django import template
 from ..models import Reading
+from ..classes import LatestForecast, LatestReading
 
 register = template.Library()
 
@@ -7,3 +8,15 @@ register = template.Library()
 def show_latest_reading(station=3):
     #breakpoint()
     return { 'current_weather' : Reading.objects.filter(station__exact=station).latest('reading_time') }
+
+@register.inclusion_tag('weather/forecast/latest.html')
+def show_latest_forecast(station=351418):
+    lf=LatestForecast(station)
+    #breakpoint()
+    lr=LatestReading() # note stations are different for readings
+
+    return { 'current_symbol' : lf.symbol,
+             'weather_type'   : lf.weather_type,
+             'latest_reading' : lr.reading,
+             
+    }    
