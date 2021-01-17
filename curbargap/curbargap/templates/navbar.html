@@ -4,8 +4,10 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
     <div class="container">
       {% show_latest_forecast %}
-      <a class="navbar-brand" href="/">    
-        curbargap.info
+      <span class="navbar-text small text-white">  {% temperature_now 3 %}&nbsp;&nbsp;</span>
+      <a class="navbar-brand " href="#">  
+       curbargap.info
+      
       </a>
       <button class='navbar-toggler' type='button' data-bs-toggle='collapse' 
               data-bs-target='#navbarCollapseLinks'  aria-expanded='false' aria-label='Toggle Navigation'>
@@ -28,12 +30,17 @@
             <li class='nav-item'>
                 <a href='/weather/reading/totals' class='nav-link'>Records</a>
             </li>
-            <li class='nav-item'>
-                <a href='/blog' class='nav-link'>Blog</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Blog
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="/blog">Weather blog</a></li>
+                <li><a class="dropdown-item" href="/weather/about">About</a></li>
+              </ul>
             </li>
-            <li class='nav-item'>
-                <a href='/weather/about' class='nav-link'>About</a>
-            </li>
+            
+           
         </ul>
       </div>
       </div>

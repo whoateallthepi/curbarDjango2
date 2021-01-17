@@ -23,3 +23,10 @@ def show_latest_forecast(station=351418):
              
     }
 
+@register.inclusion_tag('weather/reading/temperature.html')
+def temperature_now (station=3):
+    lr=LatestReading() # note stations are different for readings
+
+    return { 'latest_reading' : lr.reading,
+             
+    }
