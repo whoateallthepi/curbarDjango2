@@ -6,7 +6,7 @@ app_name = 'weather'
 urlpatterns = [
     
     path('bootstrap', TemplateView.as_view(template_name='weather/bootstrap/example.html')),
-    path('about', TemplateView.as_view(template_name='about.html')), 
+    #path('about', TemplateView.as_view(template_name='about.html')), 
     path('',views.reading_list, name = 'reading_list'),
     
     path('<int:id>/',
