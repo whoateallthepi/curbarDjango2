@@ -9,5 +9,8 @@
     {% for post in latest_posts %}
        <a href="{{ post.get_absolute_url }}" class="text-secondary list-group-item bg-light"> 
            {{ post.title }} </a>
-        {% endfor %}
+    {% endfor %}
+    <a href="{{ about_post.get_absolute_url }}" class="text-secondary list-group-item bg-light"> 
+        {{ about_post.title }} </a>   
+
 </div>
