@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('weather/', include('weather.urls', namespace='weather')),
     path ('', views.home_view, name = 'home view'),
-    path('blog/', include('blog.urls', namespace='blog'),)
+    path('blog/', include('blog.urls', namespace='blog')),
+    path('forecast/', include ('forecast.urls', namespace='forecast')),
 ]
 
 if settings.DEBUG:

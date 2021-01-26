@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Forecast list {% endblock %}
+
+{% block content %}
+
+<h1>Forecasts</h1>
+{% for forecast in forecasts %}
+<div class="border-bottom mb-4 pb-2">
+<p >
+    <a href="{{ forecast.get_absolute_url }}">
+          
+        {{ forecast.forecast_date }}
+    </a>
+    {{ forecast.name|truncatewords:30}}
+    
+</p>
+
+</div>
+{% endfor %}
+{% include "pagination.html" with page=page_obj %}
+{% endblock %}

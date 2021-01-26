@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'weather.apps.WeatherConfig',
     'blog.apps.BlogConfig',
+    'forecast.apps.ForecastConfig',
     'django_filters',
     'django_tables2',
     'easy_thumbnails',
@@ -146,3 +147,7 @@ THUMBNAIL_ALIASES = {
         'blog_sidebar' : {'size' : (150,0), 'crop': False },
     },
 }
+# The following are for the Met Office Datahub API calls
+DATAHUB_URL = "api-metoffice.apiconnect.ibmcloud.com"
+LATITUDE = 53.27041002136657
+LONGITUDE = -1.6239021210600733

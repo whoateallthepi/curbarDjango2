@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Forecast list {% endblock %}
+
+{% block content %}
+
+<h1>Forecast</h1>
+<div class="border-bottom mb-4 pb-2">
+<p >
+   Site: {{ forecast.name }}<br>
+   Date: {{ forecast.forecast_date }}<br>
+   Latitude: {{ forecast.latitude }} <br>
+   Longitude: {{ forecast.longitude }}<br>
+   Distance from requested site: {{ forecast.distance }} m <br>
+
+</p>
+
+</div>
+{% for t in forecast.timeseries_set.all %}
+<div class="border-bottom mb-2">
+<p class = "small">
+     <strong>{{ t.series_time }}</strong> &mdash;
+     temp: {{ t.screenTemperature }}&deg;C,
+     Feel: {{ t.feelsLikeTemperature }}&deg;C,
+     mslp: {{ t.mslp }}mB, 
+     precip.Rate: {{ t.precipitationRate }}, 
+     Rain: {{ t.probOfPrecipitation }}%,
+     Max10mGust: {{ t.max10mWindGust}}, 
+     max.Screen: {{ t.maxScreenAirTemp }}&deg;C,
+     min.Screen: {{ t.minScreenAirTemp }}&deg;C,
+     screenDewPoint: {{ t.screenDewPointTemperature }}&deg;C,
+     screenRh: {{ t.screenRelativeHumidity }}%,
+     Weather: {{ t.significantWeatherCode }},
+     Precipitation: {{ t.totalPrecipAmount }}mm,
+     Snow: {{ t.totalSnowAmount }}mm,
+     UV: {{ t.uvIndex }},
+     Vis.: {{ t.visibility }},
+     windFrom: {{ t.windDirectionFrom10m }},
+     windGust: {{ t.windGustSpeed10m }},
+     windSpeed: {{ t.windSpeed10m }}.
+
+ </p>   
+
+</div>
+{% endfor %}
+
+{% endblock %}
