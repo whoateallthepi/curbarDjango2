@@ -7,6 +7,7 @@
 <h1>Forecast</h1>
 <div class="border-bottom mb-4 pb-2">
 <p >
+   Type: {{ forecast.get_type_display }}<br>
    Site: {{ forecast.name }}<br>
    Date: {{ forecast.forecast_date }}<br>
    Latitude: {{ forecast.latitude }} <br>
@@ -20,7 +21,7 @@
 <div class="border-bottom mb-2">
 <p class = "small">
      <strong>{{ t.series_time }}</strong> &mdash;
-     temp: {{ t.screenTemperature }}&deg;C,
+     screenTemp: {{ t.screenTemperature }}&deg;C,
      Feel: {{ t.feelsLikeTemperature }}&deg;C,
      mslp: {{ t.mslp }}mB, 
      precip.Rate: {{ t.precipitationRate }}, 
@@ -35,9 +36,15 @@
      Snow: {{ t.totalSnowAmount }}mm,
      UV: {{ t.uvIndex }},
      Vis.: {{ t.visibility }},
-     windFrom: {{ t.windDirectionFrom10m }},
-     windGust: {{ t.windGustSpeed10m }},
-     windSpeed: {{ t.windSpeed10m }}.
+     windFrom10m: {{ t.windDirectionFrom10m }},
+     windGust10m: {{ t.windGustSpeed10m }},
+     windSpeed10m: {{ t.windSpeed10m }},
+     <strong> 3-hour forecast only:</strong> probOfSnow: {{ t.probOfSnow }},     
+     probOfHeavySnow: {{ t.probOfHeavySnow }}%,
+     probOfRain: {{ t.probOfRain }}%,
+     probOfHeavyRain: {{ t.probOfHeavyRain }}%,
+     probOfHail: {{ t.probOfHail }}%, 
+     probOfSferics: {{ t.probOfSferics }}%.
 
  </p>   
 

@@ -1,22 +1,65 @@
-
 {% extends "base.html" %}
 {% load render_table from django_tables2 %}
 {% block title %} {{ 'Weather Forecast' }} {% endblock %}
 
 {% block content %}
-  {# There must be a way of iterating the below #}
-  <h3>Summary forecast for {{ station_name|title }}</h3>
-  <div class="table-responsive">
-  <p class = 'small'>Issued: {{ forecast_time|date:"D M d H:i A" }}</p><h4> {{ 'Today' }} </h4>
+<h3>Summary forecast for {{ place|title|truncatewords:5 }}</h3>
+<p class = 'small'>Issued: {{ issued|date:"D M d H:i A" }}</p>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#today" role="tab" aria-controls="today" aria-selected="true">Today</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#tomorrow" role="tab" aria-controls="tomorrow" aria-selected="false">{{ dates.1|date:"D" }}</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tomorrowplus1" role="tab" aria-controls="tomorrowplus1" aria-selected="false">{{ dates.2|date:"D" }}</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tomorrowplus2" role="tab" aria-controls="tomorrowplus2" aria-selected="false">{{ dates.3|date:"D" }}</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tomorrowplus3" role="tab" aria-controls="tomorrowplus3" aria-selected="false">{{ dates.4|date:"D" }}</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tomorrowplus4" role="tab" aria-controls="tomorrowplus4" aria-selected="false">{{ dates.5|date:"D" }}</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tomorrowplus5" role="tab" aria-controls="tomorrowplus5" aria-selected="false">{{ dates.6|date:"D" }}</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#tomorrowplus6" role="tab" aria-controls="tomorrowplus6" aria-selected="false">{{ dates.7|date:"D" }}</a>
+  </li>
   
-    {% render_table tables.0 %}
- 
-  <h4> {{ 'Tomorrow' }} </h4>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="today" role="tabpanel" aria-labelledby="today-tab"> 
+    {% render_table tables.0 %}</div>
+  <div class="tab-pane fade" id="tomorrow" role="tabpanel" aria-labelledby="tomorrow-tab">
     {% render_table tables.1 %}
-  
-  <h4> {{ dates.2|date:"l"  }} </h4>
-    {% render_table tables.2 %}
-   
   </div>
+  <div class="tab-pane fade" id="tomorrowplus1" role="tabpanel" aria-labelledby="tomorrowplus1-tab">
+    {% render_table tables.2 %}
+  </div>
+  <div class="tab-pane fade" id="tomorrowplus2" role="tabpanel" aria-labelledby="tomorrowplus2-tab">
+    {% render_table tables.3 %}
+  </div>
+  <div class="tab-pane fade" id="tomorrowplus3" role="tabpanel" aria-labelledby="tomorrowplus3-tab">
+    {% render_table tables.4 %}
+  </div>
+  <div class="tab-pane fade" id="tomorrowplus4" role="tabpanel" aria-labelledby="tomorrowplus4-tab">
+    {% render_table tables.5 %}
+  </div>
+  <div class="tab-pane fade" id="tomorrowplus5" role="tabpanel" aria-labelledby="tomorrowplus5-tab">
+    {% render_table tables.6 %}
+  </div>
+  <div class="tab-pane fade" id="tomorrowplus6" role="tabpanel" aria-labelledby="tomorrowplus6-tab">
+    {% render_table tables.7 %}
+  </div>
+  
+ 
+</div>
+
 
 {% endblock %}

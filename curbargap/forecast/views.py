@@ -5,7 +5,7 @@ from datetime import date
 
 from forecast.models import Forecast, TimeSeries, Symbol
 from django.conf import settings
-from forecast.utils import fetch_hourly_forecast
+from forecast.classes import DataHub
 from forecast.tables import TimeSeriesTable
 
 # Create your views here.
@@ -21,7 +21,7 @@ class ForecastDetailView(DetailView):
     queryset = Forecast.objects.all() 
     template_name = 'forecast/forecast/detail.html'
  
-class FetchHourlyForecast(View):
+class FetchForecasts(View):
 
     template_name = 'forecast/forecast/fetch.html'
 
@@ -29,7 +29,11 @@ class FetchHourlyForecast(View):
         api_key = kwargs['api_key']
         
         if api_key == settings.FORECAST_KEY:
-            fetch_hourly_forecast()
+            #create the Met Office DataHub connection 
+            dh = DataHub()
+            dh.fetch_spot_forecast(type=3) # three-hourly forecast
+            dh.fetch_spot_forecast(type=1)
+            dh.close() 
             message = 'API matched - datahub contacted'
         else:
             message = 'API key failure'    
@@ -41,8 +45,8 @@ class SummaryForecastView(View):
     def get(self, request, *args, **kwargs):
 
         # first get latest forecast object
-        f = Forecast.objects.latest('forecast_date')
-
+        f = Forecast.objects.filter(type=1).latest('forecast_date')
+  
         # then all the TimeSeries - earliest first is the default
         t =  f.timeseries_set.all()
 
@@ -51,13 +55,27 @@ class SummaryForecastView(View):
     
         dates=[]
         # should be a listcomp
-        for d in range (0,3):
+        for d in range (0,8):
             dates.append((td + timedelta(days=d)))
    
         # create a list to hold TimeSeries tables  
         tables = []
-        for day in dates:
+        for day in dates[0:3]:
             timeseries = t.filter(series_time__date=day)
             tables.append(TimeSeriesTable(timeseries, orderable=False))
 
-        return render (request, self.template_name, {'tables': tables })    
+        # move on to process 3-day forecasts
+
+        f3 = Forecast.objects.filter(type=3).latest('forecast_date')
+
+        # then all the TimeSeries - earliest first is the default
+        t3 =  f3.timeseries_set.all()
+        for day in dates [3:]:
+            timeseries = t3.filter(series_time__date=day)
+            tables.append(TimeSeriesTable(timeseries, orderable=False))
+        #breakpoint()
+
+        return render (request, self.template_name, {'tables': tables,
+                                                     'dates': dates,
+                                                     'issued' : f.forecast_date,
+                                                     'place' : f.name })    

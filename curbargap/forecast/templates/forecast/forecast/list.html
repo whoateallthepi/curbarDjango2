@@ -10,9 +10,9 @@
 <p >
     <a href="{{ forecast.get_absolute_url }}">
           
-        {{ forecast.forecast_date }}
+        {{ forecast.forecast_date }} 
     </a>
-    {{ forecast.name|truncatewords:30}}
+    Type: {{ forecast.get_type_display|title }} for {{ forecast.name|truncatewords:30}}
     
 </p>
 
