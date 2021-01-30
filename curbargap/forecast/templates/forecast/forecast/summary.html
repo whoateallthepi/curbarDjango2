@@ -4,7 +4,7 @@
 
 {% block content %}
 <h3>Summary forecast for {{ place|title|truncatewords:5 }}</h3>
-<p class = 'small'>Issued: {{ issued|date:"D M d H:i A" }}</p>
+<p class = 'small'>Issued: {{ issued|date:"D M d H:i A e" }}</p>
 
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
@@ -35,27 +35,44 @@
 </ul>
 <div class="tab-content" id="myTabContent">
   <div class="tab-pane fade show active" id="today" role="tabpanel" aria-labelledby="today-tab"> 
-    {% render_table tables.0 %}</div>
+    <div class="table-responsive"> 
+      {% render_table tables.0 %}
+    </div>  
+  </div>
   <div class="tab-pane fade" id="tomorrow" role="tabpanel" aria-labelledby="tomorrow-tab">
-    {% render_table tables.1 %}
+    <div class="table-responsive">
+      {% render_table tables.1 %}
+    </div>
   </div>
   <div class="tab-pane fade" id="tomorrowplus1" role="tabpanel" aria-labelledby="tomorrowplus1-tab">
-    {% render_table tables.2 %}
+    <div class="table-responsive">
+      {% render_table tables.2 %}
+    </div>
   </div>
   <div class="tab-pane fade" id="tomorrowplus2" role="tabpanel" aria-labelledby="tomorrowplus2-tab">
-    {% render_table tables.3 %}
+    <div class="table-responsive">
+      {% render_table tables.3 %}
+    </div>  
   </div>
   <div class="tab-pane fade" id="tomorrowplus3" role="tabpanel" aria-labelledby="tomorrowplus3-tab">
-    {% render_table tables.4 %}
+    <div class="table-responsive">
+      {% render_table tables.4 %}
+    </div>  
   </div>
   <div class="tab-pane fade" id="tomorrowplus4" role="tabpanel" aria-labelledby="tomorrowplus4-tab">
-    {% render_table tables.5 %}
+    <div class="table-responsive">
+      {% render_table tables.5 %}
+    </div>  
   </div>
   <div class="tab-pane fade" id="tomorrowplus5" role="tabpanel" aria-labelledby="tomorrowplus5-tab">
-    {% render_table tables.6 %}
+    <div class="table-responsive">
+      {% render_table tables.6 %}
+    </div>  
   </div>
   <div class="tab-pane fade" id="tomorrowplus6" role="tabpanel" aria-labelledby="tomorrowplus6-tab">
-    {% render_table tables.7 %}
+    <div class="table-responsive">
+      {% render_table tables.7 %}
+    </div>  
   </div>
   
  

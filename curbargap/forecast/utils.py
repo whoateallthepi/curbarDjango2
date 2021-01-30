@@ -1,7 +1,8 @@
 from django.conf import settings
-from forecast.models import Forecast, TimeSeries
+from .models import Forecast, TimeSeries
 import http.client
 import json
+from django.db import connection
 
 weather_codes = {
     0: "Clear night",
@@ -36,6 +37,27 @@ weather_codes = {
     29: "Thunder shower (day)",
     30: "Thunder",
 }
+
+def get_weather_type(symbol):
+      # At moment yhe value we have is the URL of the image - hence this rather odd
+      # lookup. Will revisit this
+      with connection.cursor() as cursor:
+        cursor.execute("SELECT weather_type from forecast_symbol where symbol_image = %s", [symbol])
+        row = cursor.fetchone()
+        #breakpoint()
+      
+      #breakpoint()
+      return row [0]  
+
+def get_direction(arrow):
+    # see note in get_weather_type above 
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT direction_from from forecast_arrow where arrow_image = %s", [arrow])
+        row = cursor.fetchone()
+        #breakpoint()
+      
+    #breakpoint()
+    return row [0]       
 
 
 class ObjectView(object):
@@ -125,3 +147,33 @@ def fetch_hourly_forecast():
     
     return None
 
+def get_rose(degrees):
+        #Utility to convert degrees to a human direction
+        # At the moment I only have a limited arrow set
+        sectors = ["N",
+                    #"NNE",
+                    "NE",
+                    #"ENE",
+                    "E",
+                    #"ESE",
+                    "SE",
+                    #"SSE",
+                    "S",
+                    #"SSW",
+                    "SW",
+                    #"WSW",
+                    "W",
+                    #"WNW",
+                    "NW",
+                    #"NNW",
+                    "N"
+                  ]
+
+        big_degrees = (360 + 22.5) + degrees
+        sector = int(big_degrees/45)
+        breakpoint()
+        #force into range 0-7, with 0 = N 
+        if sector >= 8:
+          sector -= 8
+
+        return sectors[sector]

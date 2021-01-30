@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.conf import settings
 from math import trunc
 
-#from .utils import get_weather
+from .utils import get_weather_type, get_direction
 
 
 class OneDecimalColumn(tables.Column):
@@ -19,23 +19,30 @@ class MphColumn(tables.Column):
 
 class ImageColumn(tables.Column):
         def render(self, value):
-            #wt = get_weather(value) # revisit this weird reverse lookup
-            wt = 'work inprogress'
-            #breakpoint()
+            wt = get_weather_type(value) # revisit this weird reverse lookup
             return format_html(
                '<img src="{url}" height="60px", width = "60px", class = "weather_symbol" alt="{wt}" title="{wt}">',
                 url=(settings.MEDIA_URL + value),
                 wt=(wt)
                 )
 
+class ArrowColumn(tables.Column):
+        def render(self, value):
+            dt = get_direction(value) # revisit this weird reverse lookup
+            return format_html(
+               '<img src="{url}" height="50px", width = "50px", class = "" alt="{dt}" title="{dt}">',
+                url=(settings.MEDIA_URL + value),
+                dt=(dt)
+                )                
+
+#class RoseColumn(tables.Column):
+#    def render(self, value):
+#        rose = get_rose(value)
+#        return rose
+
 class TimeSeriesTable(tables.Table):
-    #def __init__(self,*args,**kwargs):
-    #    super().__init__(*args,**kwargs)
-    #    self.base_columns['wind_direction'].verbose_name = 'Rose'
-    
-    #date_header = 'date header'
-    series_time = tables.DateTimeColumn(format ='gA')
-    windDirectionFrom10m = tables.Column(verbose_name = 'From')
+    series_time = tables.DateTimeColumn(format ='P')
+    #windDirectionFrom10m = RoseColumn(verbose_name = 'From')
     windSpeed10m = MphColumn(verbose_name = 'Wind')
     feelsLikeTemperature = OneDecimalColumn(verbose_name = 'Feel')
 
@@ -45,7 +52,9 @@ class TimeSeriesTable(tables.Table):
     screenTemperature = OneDecimalColumn(verbose_name = (u'\u00B0' + 'C')) # degrees sign
     probOfPrecipitation = tables.Column(verbose_name = '%Rain')
     
-
+    arrow = ArrowColumn(accessor='get_arrow',
+                            verbose_name = 'Dir.')
+                    
     class Meta:
         attrs = {"class": "table"}
         model = TimeSeries
@@ -57,6 +66,6 @@ class TimeSeriesTable(tables.Table):
                   'feelsLikeTemperature',
                   'probOfPrecipitation',
                   'windSpeed10m',
-                  'windDirectionFrom10m',
+                  'arrow',
                   'uvIndex',)
                   

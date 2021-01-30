@@ -66,6 +66,45 @@ class TimeSeries(models.Model):
     uvIndex = models.IntegerField('UV',blank=True, null=True)
     visibility = models.IntegerField('visibility',blank=True, null=True)
     windDirectionFrom10m = models.IntegerField('wind direction',blank=True, null=True)
+
+    def get_arrow(self):
+
+      def get_rose(degrees):
+       #Utility to convert degrees to a human direction
+       # At the moment I only have a limited arrow set
+       sectors = ["N",
+                   #"NNE",
+                   "NE",
+                   #"ENE",
+                   "E",
+                   #"ESE",
+                   "SE",
+                   #"SSE",
+                   "S",
+                   #"SSW",
+                   "SW",
+                   #"WSW",
+                   "W",
+                   #"WNW",
+                   "NW",
+                   #"NNW",
+                   "N"
+                 ]
+       big_degrees = (360 + 22.5) + degrees
+       sector = int(big_degrees/45)
+       #force into range 0-7, with 0 = N 
+       if sector >= 8:
+         sector -= 8
+       return sectors[sector]
+       # end of get_rose
+      
+      rose = get_rose(self.windDirectionFrom10m) # produces 'NW', 'SE' etc
+      with connection.cursor() as cursor:
+        cursor.execute("SELECT arrow_image from forecast_arrow where direction_from = %s", [rose])
+        row = cursor.fetchone()
+      #breakpoint()
+      return row [0]
+
     windGustSpeed10m = models.DecimalField('wind gust', max_digits=5, decimal_places=2,blank=True, null=True)
     windSpeed10m = models.DecimalField('wind speed', max_digits=5, decimal_places=2,blank=True, null=True)
     probOfSnow=models.IntegerField('chance of snow',blank=True, null=True)
@@ -78,3 +117,9 @@ class TimeSeries(models.Model):
     class Meta:
         ordering = ['series_time'] 
 
+class Arrow (models.Model):
+   direction_from = models.CharField('wind from', unique=True,max_length=3)
+   arrow_image = models.ImageField(upload_to='arrows/',
+                                     blank=True)
+   def __str__(self):
+        return self.direction_from                                

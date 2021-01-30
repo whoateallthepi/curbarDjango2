@@ -166,5 +166,5 @@ def regional_forecast_view(request, region_id):
                    }
                    )
 def home_view(request):
-   response = redirect('/weather/forecast/summary/351418') 
+   response = redirect('/forecast/forecast/summary') 
    return response 

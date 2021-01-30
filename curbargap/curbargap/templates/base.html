@@ -1,7 +1,6 @@
 {# Load the tag library #}
 
 {% load weather_tags %}
-{% load station_tags %}
 {% load blog_tags %}
 
 {% load static %}
@@ -35,7 +34,6 @@
   <div id='sidebar-1' class = ' col-md-4  bg-secondary p-2'>
           {% show_latest_posts 3 %}
           {% show_latest_reading %}
-          {% show_latest_status %}
             
   </div>
 </div>

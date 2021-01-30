@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.utils.timezone import datetime, timedelta
+from django.utils import timezone
 from datetime import date
 
 from forecast.models import Forecast, TimeSeries, Symbol
@@ -58,11 +59,13 @@ class SummaryForecastView(View):
         for d in range (0,8):
             dates.append((td + timedelta(days=d)))
    
+        past_hour = timezone.now() + timedelta(hours=-1)
+        
         # create a list to hold TimeSeries tables  
         tables = []
         for day in dates[0:3]:
-            timeseries = t.filter(series_time__date=day)
-            tables.append(TimeSeriesTable(timeseries, orderable=False))
+            timeseries = t.filter(series_time__date=day).filter(series_time__gt=past_hour) # exclude expired forecasts
+            tables.append(TimeSeriesTable(timeseries, orderable=False))                    
 
         # move on to process 3-day forecasts
 
