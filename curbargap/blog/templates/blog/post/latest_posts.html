@@ -1,6 +1,6 @@
 <h4 class = 'text-light text-center'> Blog latest</h4>
 {% load thumbnail %}
-<a href="{{ latest_posts.0.get_absolute_url }}">
+<a href="/blog">
 <img src="{{ latest_posts.0.image|thumbnail_url:'blog_sidebar' }}"
      class="img-fluid rounded mx-auto d-block mb-2" 
      alt ="{{ latest_posts.0.image_title }} " title ="{{ latest_posts.0.image_title }}">
