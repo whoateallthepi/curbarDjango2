@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Satellite list {% endblock %}
+
+{% block content %}
+
+<h1>Satellite images</h1>
+<table class = "table">
+    <thead>
+        <tr>
+            <th scope="col"> Time</th>
+            <th scope="col"> Type</th>
+        </tr>
+    </thead>
+    <tbody> 
+
+    {% for satelliteimage in satelliteimages %}
+        <tr>
+            <td>
+                <a href="{{ satelliteimage.get_absolute_url }}">
+                    {{ satelliteimage.image_time| date:"l" }} {{ satelliteimage.image_time }}</a>
+            </td>
+            <td> {{ satelliteimage.get_type_code_display }} </td>
+        </tr>
+    
+    {% endfor %}
+    </tbody>
+</table>    
+
+{% include "pagination.html" with page=page_obj %}
+{% endblock %}

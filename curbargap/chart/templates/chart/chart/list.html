@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Chart list {% endblock %}
+
+{% block content %}
+
+<h1>Charts</h1>
+<table class = "table">
+    <thead>
+        <tr>
+            <th scope="col"> Forecast for</th>
+            <th scope="col"> Run on</th>
+        </tr>
+    </thead>
+    <tbody> 
+
+    {% for chart in charts %}
+        <tr>
+            <td>
+                <a href="{{ chart.get_absolute_url }}">
+                    {{ chart.forecast_time|date:"l" }} {{ chart.forecast_time }}</a>
+            </td>
+            <td> {{ chart.run.date|date:"d/m/Y" }} </td>
+        </tr>
+    
+    {% endfor %}
+    </tbody>
+</table>    
+
+{% include "pagination.html" with page=page_obj %}
+{% endblock %}

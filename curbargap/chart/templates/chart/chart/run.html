@@ -1,0 +1,43 @@
+{% extends "base_no_sidebar.html" %}
+{% block title %} {{ 'Charts' }} {{ run_date|date:"D M d H:i A e" }}  {% endblock %}
+
+{% block content %}
+
+<h3>Charts</h3>
+<p class = 'small'>Issued: {{ run_date|date:"D M d H:i A e" }}</p>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    
+    {% for chart in charts %}
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link{% if forloop.first %} active{% endif %}" id="{{ chart.pk }}-tab" data-bs-toggle="tab" href="#tab-{{ chart.pk }}" role="tab" aria-controls="{{ chart.pk }}" aria-selected="true"> 
+            {% if forloop.counter < 3 %} {{ chart.forecast_time|date:"H:i"}}
+            {% else %}{{ chart.forecast_time|date:"D H:i"}} {% endif %}
+        </a>
+    </li>
+
+    {% empty %}
+        <p> Sorry no charts found</p>
+
+
+    {% endfor %}
+
+
+</ul>
+
+<div class="tab-content mb-4" id="myTabContent">
+    
+    {% for chart in charts %}
+    
+    <div class="tab-pane fade {% if forloop.first %} show active {% endif %}" id="tab-{{ chart.pk }}" role="tabpanel" aria-labelledby="today-tab"> 
+        <img src="{{ chart.image_file.url}}"
+        class="img-fluid rounded" 
+        alt = "Weather chart {{ chart.forecast_time }}"
+        title = "Weather chart {{ chart.forecast_time }}">
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %} {{ 'Satellite Images' }} {{ satelliteimages.0.get_type_code_display }} {% endblock %}
+
+{% block content %}
+
+<h3> {{ satelliteimages.0.get_type_code_display }}</h3>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    
+    {% for satellite in  satelliteimages %}
+
+    <li class="nav-item" role="presentation">
+        <a class="nav-link{% if forloop.first %} active{% endif %}" id="{{ satellite.pk }}-tab" data-bs-toggle="tab" href="#tab-{{ satellite.pk }}" role="tab" aria-controls="{{ satellite.pk }}" aria-selected="true"> 
+           {{ satellite.image_time }}  
+        </a>
+    </li>
+    {% empty %}
+        <p> Sorry no images found</p>
+
+
+    {% endfor %}
+
+
+</ul>
+
+<div class="tab-content mb-4" id="myTabContent">
+    
+    {% for satellite in satelliteimages %}
+    
+    <div class="tab-pane fade {% if forloop.first %} show active {% endif %}" id="tab-{{ satellite.pk }}" role="tabpanel" aria-labelledby="today-tab"> 
+        <img src="{{ satellite.image_file.url}}"
+        class="img-fluid rounded" 
+        alt = "Satellite {{ satellite.forecast_time }}"
+        title = "Satellite image {{ satellite.forecast_time }}">
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

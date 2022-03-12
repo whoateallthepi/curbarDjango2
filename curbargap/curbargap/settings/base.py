@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'weather.apps.WeatherConfig',
     'blog.apps.BlogConfig',
     'forecast.apps.ForecastConfig',
+    'chart.apps.ChartConfig',
     'django_filters',
     'django_tables2',
     'easy_thumbnails',
@@ -122,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
@@ -145,9 +146,18 @@ THUMBNAIL_ALIASES = {
         'blog_thumbnail': {'size': (100, 100), 'crop': True},
         'blog_standard': {'size': (200,0), 'crop': False},
         'blog_sidebar' : {'size' : (150,0), 'crop': False },
+        
     },
 }
 # The following are for the Met Office Datahub API calls
 DATAHUB_URL = "api-metoffice.apiconnect.ibmcloud.com"
+DATAPOINT_URL = "datapoint.metoffice.gov.uk"
+CHARTS_URL = "/public/data/image/wxfcs/surfacepressure/json/capabilities?key={datapoint_key}"
+SATELLITES_URL = "/public/data/layer/wxobs/all/json/capabilities?key={datapoint_key}"
+
 LATITUDE = 53.27041002136657
 LONGITUDE = -1.6239021210600733
+
+# Dates
+SHORT_DATE_FORMAT = "d/m/Y"
+USE_L10 = False

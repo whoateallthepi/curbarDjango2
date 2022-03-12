@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %} Chart detail {% endblock %}
+
+{% block content %}
+
+<h1>Chart &ndash; {{ chart.forecast_time|date:"l" }} {{ chart.forecast_time }}</h1>
+<p> Forecast run on {{ chart.run.date }}</p>
+    <img src="{{ chart.image_file.url}}"
+    class="img-fluid rounded" 
+    alt = "Weather chart {{ chart.forecast_time }}"
+    title = "Weather chart {{ chart.forecast_time }}">
+
+</a>
+
+   
+
+</p>
+
+</div>
+
+{% endblock %}

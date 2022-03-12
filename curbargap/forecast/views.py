@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.utils.timezone import datetime, timedelta

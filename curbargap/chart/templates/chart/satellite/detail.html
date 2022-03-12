@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %} Satellite detail {% endblock %}
+
+{% block content %}
+
+<h1>{{ satelliteimage.get_type_code_display }} </h1>
+<p> {{ satelliteimage.image_time|date:"l" }} {{ satelliteimage.image_time }}</p>
+<p>
+<img src="{{ satelliteimage.image_file.url}}"
+    class="img-fluid rounded float-left" 
+    alt = "Satellite image {{ satelliteimage.image_time }}"
+    title = "Satellite image  {{ satelliteimage.image_time }}">
+
+</p>
+
+</div>
+
+{% endblock %}

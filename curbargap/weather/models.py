@@ -17,6 +17,7 @@ class Station(models.Model):
    type = models.CharField('Station Type', max_length=3)
    RFid = models.CharField('Station RFid', max_length=2, blank=True, null=True)
    phone = models.IntegerField('Station Phone', blank=True, null=True)
+   hardwarekey = models.CharField('Station Hardware Key', max_length=16, blank=True, null=True)
 
    def __str__(self):
         return self.name
