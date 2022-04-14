@@ -3,10 +3,91 @@ from django.db import connection
 from django.utils import dateparse
 from .models import Chart, ChartRun, SatelliteImage
 
+from zoneinfo import ZoneInfo
+
 import http.client
 import json
 
 from datetime import timedelta
+
+import eumdac
+import time
+import fnmatch # all these for file download only
+import io
+import shutil
+from tempfile import NamedTemporaryFile
+
+class EUMetsat(object):
+    
+    def __init__(self, consumer_key = None, consumer_secret = None):
+                
+        if consumer_key is None:
+            consumer_key = settings.EUMETSAT_CONSUMER_KEY
+            consumer_secret = settings.EUMETSAT_CONSUMER_SECRET
+
+        credentials = (consumer_key, consumer_secret)
+        
+        self.token = eumdac.AccessToken(credentials)
+        self.datastore = None
+        self.collection = None
+        self.selected = None
+        self.datatailor = None
+
+        print(f"This token '{self.token}' expires {self.token.expiration}")
+
+    def set_collection (self, product_name = 'EO:EUM:DAT:MSG:HRSEVIRI'):
+        self.datastore = eumdac.DataStore(self.token)
+        self.collection = self.datastore.get_collection(product_name)
+
+    def get_first_in_collection (self):
+        self.selected = self.collection.search().first()
+
+    def list_chains (self, product='HRSEVIRI'):
+        if self.datatailor is None:
+            self.datatailor = eumdac.DataTailor(self.token) 
+
+        for chain in self.datatailor.chains.search(product=product):
+            print(chain)
+            print('---')    
+
+    def process_image (self, chain= 'hrseviri_nwe', output_type = "*.png", write_to_DB = True):
+        if self.datatailor is None:
+            self.datatailor = eumdac.DataTailor(self.token) 
+
+        chain =  self.datatailor.chains.read(chain)
+        # Run the customnisation
+
+        customisation = self.datatailor.new_customisation(self.selected, chain=chain)
+
+        print(f'The status of the customisation is {customisation.status}.')
+        while int(customisation.progress) < 100:
+            print(f'The progress of the customisation is: {customisation.progress}%')
+            time.sleep(2)
+
+        file_name, =  fnmatch.filter(customisation.outputs, output_type)  
+
+        with customisation.stream_output(file_name,) as stream,  NamedTemporaryFile(delete=True) as tempfile: #,  open(stream.name, mode='wb') as fdst:
+            #file = tempfile.SpooledTemporaryFile()
+            #file = io.BytesIO()
+            shutil.copyfileobj(stream, tempfile)
+            
+            if write_to_DB:
+                # Create a Django object
+                s_image = SatelliteImage(type_code = SatelliteImage.EUMETSAT,
+                                        image_time = self.selected.sensing_end.replace(tzinfo=ZoneInfo('UTC')),
+                                        image_url = tempfile.name, # this will be a /tmp/...etc
+                                        #image_file = tempfile,
+                                        processing_details = chain.filter)
+                s_image.save()
+            
+            customisation.delete()    
+
+    def clear_datatailor(self):   
+        if self.datatailor is None:
+            self.datatailor = eumdac.DataTailor(self.token)
+
+        for customisation in self.datatailor.customisations:
+            customisation.delete()    
 
 class DataPoint(object):
     

@@ -28,10 +28,12 @@
     {% for satellite in satelliteimages %}
     
     <div class="tab-pane fade {% if forloop.first %} show active {% endif %}" id="tab-{{ satellite.pk }}" role="tabpanel" aria-labelledby="today-tab"> 
+        <a href="{{ satellite.image_file.url}}">
         <img src="{{ satellite.image_file.url}}"
         class="img-fluid rounded" 
         alt = "Satellite {{ satellite.forecast_time }}"
         title = "Satellite image {{ satellite.forecast_time }}">
+        </a> 
     </div>
     {% endfor %}
 

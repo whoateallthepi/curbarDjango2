@@ -13,6 +13,7 @@ from django.views.generic import ListView, DetailView, TemplateView, View
 from chart.models import Chart, ChartRun, SatelliteImage
 from django.conf import settings
 from chart.classes import DataPoint
+from chart.classes import EUMetsat
 
 from chart.forms import ChartSearchForm, SatelliteSearchForm
 from django.views.generic.edit import FormView
@@ -113,24 +114,33 @@ class FetchImages(View):
 
     def get(self, request, *args, **kwargs):
         api_key = kwargs['api_key']
+        type = self.request.GET.get('type') or 'MetOffice'
+        product = self.request.GET.get('product') or 'EO:EUM:DAT:MSG:HRSEVIRI'
         
-        if api_key == settings.FORECAST_KEY:
+        #breakpoint()
+        if api_key != settings.FORECAST_KEY:
+            return render (request, self.template_name, {'message':  'API key failure' })
+        
+        if type == 'MetOffice':
             #create the Met Office DataHub connection 
             dp = DataPoint()
             dp.fetch_satellite() 
             dp.close() 
-            message = 'API matched - DataPoint contacted'
-        else:
-            message = 'API key failure'    
+            return render (request, self.template_name, {'message': 'API matched - DataPoint contacted' })
         
-        return render (request, self.template_name, {'message': message })        
+        if type == 'EUMetsat':
+            em = EUMetsat()
+            em.set_collection(product)  
+            em.get_first_in_collection() # this will be the latest image
+            em.process_image()
+            return render (request, self.template_name, {'message': 'API matched - EUMetsat contacted' })
 
+        return render (request, self.template_name, {'message': ('Unrecognised type:' + type) })    
+        
 class ChartSearchFormView(FormView):
    
     template_name = 'chart/chart/search.html'
     form_class = ChartSearchForm
-    
-
 
     def form_valid(self,form):
         #breakpoint()

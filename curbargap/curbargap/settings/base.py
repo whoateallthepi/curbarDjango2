@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
 
 # Application definition
 
@@ -157,6 +158,9 @@ SATELLITES_URL = "/public/data/layer/wxobs/all/json/capabilities?key={datapoint_
 
 LATITUDE = 53.27041002136657
 LONGITUDE = -1.6239021210600733
+
+DEFAULT_STATION = 3
+DEFAULT_FORECAST_STATION = 351418
 
 # Dates
 SHORT_DATE_FORMAT = "d/m/Y"

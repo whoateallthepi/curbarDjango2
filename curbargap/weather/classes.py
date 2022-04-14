@@ -115,3 +115,7 @@ class WeatherSummary(object):
         total = self.date_station_query.aggregate(Sum('rain_since_last'))
         rain_total = total['rain_since_last__sum']
         return { 'rain_total' : rain_total, }
+
+class AstroData(object):
+    def __init__(self, latitude, longitude, date):
+        pass

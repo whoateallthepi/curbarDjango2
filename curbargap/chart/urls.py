@@ -14,7 +14,7 @@ urlpatterns = [
     path('satelliteimage/<int:pk>', views.SatelliteImageDetailView.as_view(),name='satelliteimage_detail'),
     path('satelliteimage/set/<type>/', views.SatelliteSetView.as_view(),name='satellite_set'),
     path('satelliteimage/search/',views.SatelliteSearchFormView.as_view(), name ='satellite_search'),
-    path('satelliteimage/api/fetch/<api_key>', views.FetchImages.as_view(), name = 'fetch_images'),
+    path('satelliteimage/api/fetch/<api_key>/', views.FetchImages.as_view(), name = 'fetch_images'),
     
     
     #path('forecast/api/fetchforecast/<api_key>', views.FetchForecasts.as_view(), name = 'fetch_forecast'),

@@ -46,7 +46,7 @@ class Reading(models.Model):
    rain_since_last = models.DecimalField('Rain Since Last Reading', max_digits=6, decimal_places=2, blank=True, null=True)
    bar_uncorrected = models.FloatField('Uncorrected pressure')
    bar_corrected =  models.DecimalField('Barometer (corrected)', max_digits=5, decimal_places=1)
-   battery = battery= models.DecimalField('Battery', max_digits=4, decimal_places=2, default=0, blank=True, null=True)
+   battery = models.DecimalField('Battery', max_digits=4, decimal_places=2, default=0, blank=True, null=True)
    light = models.DecimalField('Battery', max_digits=4, decimal_places=2, default=0, blank=True, null=True)
    
    def get_absolute_url(self):
@@ -100,13 +100,23 @@ class Reading(models.Model):
                ', Rain today:{rt:0.1f}mm'.format(rt=self.rain_today) +
                ', Rain last hr:{rh:0.1f}mm'.format(rh=self.rain_1h) 
       ) 
+# Astronmonical data
+class AstronomicalData(models.Model):
+   station = models.ForeignKey(Station,on_delete=models.CASCADE)
+   date = models.DateField('Date')
+   sunrise = models.DateTimeField('Sunrise')
+   sunset = models.DateTimeField('Sunset')
+   moonrise = models.DateTimeField('Moonrise')
+   moonset = models.DateTimeField('Moonset')
+   moonphase = models.DecimalField('Phase', max_digits=4, decimal_places=1, default=0, blank=True, null=True)
+
+
 # the following are for weather forecasts via Met Office DataPoint
 # 
 
 class Symbol (models.Model):
    symbol_key = models.IntegerField('symbol key', unique=True)
-   symbol_image = models.ImageField(upload_to='symbols/',
-                                     blank=True)
+   symbol_image = models.ImageField(upload_to='symbols/',blank=True)
    weather_type = models.CharField('Weather', max_length=30)                                  
 
 class Forecast(models.Model):

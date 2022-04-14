@@ -63,7 +63,7 @@ def reading_search (request):
                    'result' : result,
                    'station' : station,}) 
 
-def forecast_view (request, station_id=351418):
+def forecast_view (request, station_id=settings.DEFAULT_FORECAST_STATION):
     #
     # This is used for the summary forecast 
     #

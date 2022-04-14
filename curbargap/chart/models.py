@@ -49,33 +49,47 @@ class SatelliteImage(models.Model):
     SATELLITE_INFRARED = 2
     RADAR_COMPOSITE = 3 
     ATDNET = 4
+    EUMETSAT = 5
     TYPES_OF_IMAGE = [
         (NONE, 'Unknown'),
         (SATELLITE_VISIBLE_N, 'SATELLITE_Visible_N_Section'),
         (SATELLITE_INFRARED, 'SATELLITE_Infrared_Fulldisk'),
         (RADAR_COMPOSITE, 'RADAR_UK_Composite_Highres'),
         (ATDNET, 'ATDNET_Sferics'),
+        (EUMETSAT, 'EUMETSAT')
     ]
 
     type_code = models.IntegerField('type_code', choices = TYPES_OF_IMAGE, default = NONE)
     image_time = models.DateTimeField('image time',default=timezone.now)
-    image_url = models.URLField('Met office URL', max_length=200)
+    image_url = models.URLField('Met office URL', max_length=200,blank=True)
     image_file = models.ImageField(upload_to='satellite/%Y/%m/%d/', blank=True)
+    processing_details = models.CharField('Processing details', blank=True, default='', max_length=60)
     
     def save(self, *args, **kwargs):
-        if self.image_url and not self.image_file:
-            img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(urlopen(self.image_url).read())
-            img_temp.flush()
-            # work out layername from the type_code
-            layername = 'unknown'
-            for ii in self.TYPES_OF_IMAGE:
-                type_code, layername_check = ii
-                if type_code == self.type_code:
-                    layername = layername_check
-                    break
-            fname = layername  +'_' + self.image_time.strftime('%Y%m%d%H%M%S') +'.png'
-            self.image_file.save(fname, File(img_temp))
+        
+        if self.image_url and not self.image_file: 
+            if self.type_code == self.EUMETSAT: # these images are in a temporary file name (in image_url), not on web
+                fname = 'EUMETSAT' + self.image_time.strftime('%Y%m%d%H%M%S') +'.png'
+                #file_src = open(self.image_url,'r')
+                self.image_url = 'file://' + self.image_url # convert to a real URL
+                img_temp = NamedTemporaryFile(delete=True)
+                img_temp.write(urlopen(self.image_url).read())
+                img_temp.flush()
+                self.image_file.save(fname, File(img_temp))
+                
+            else: # These are all the images dragged in from web
+                img_temp = NamedTemporaryFile(delete=True)
+                img_temp.write(urlopen(self.image_url).read())
+                img_temp.flush()
+                # work out layername from the type_code
+                layername = 'unknown'
+                for ii in self.TYPES_OF_IMAGE:
+                    type_code, layername_check = ii
+                    if type_code == self.type_code:
+                        layername = layername_check
+                        break
+                fname = layername  +'_' + self.image_time.strftime('%Y%m%d%H%M%S') +'.png'
+                self.image_file.save(fname, File(img_temp))
             
         super(SatelliteImage, self).save(*args, **kwargs)
     
