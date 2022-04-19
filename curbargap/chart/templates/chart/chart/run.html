@@ -1,4 +1,4 @@
-{% extends "base_no_sidebar.html" %}
+{% extends "base.html" %}
 {% block title %} {{ 'Charts' }} {{ run_date|date:"D M d H:i A e" }}  {% endblock %}
 
 {% block content %}
@@ -12,8 +12,7 @@
 
     <li class="nav-item" role="presentation">
         <a class="nav-link{% if forloop.first %} active{% endif %}" id="{{ chart.pk }}-tab" data-bs-toggle="tab" href="#tab-{{ chart.pk }}" role="tab" aria-controls="{{ chart.pk }}" aria-selected="true"> 
-            {% if forloop.counter < 3 %} {{ chart.forecast_time|date:"H:i"}}
-            {% else %}{{ chart.forecast_time|date:"D H:i"}} {% endif %}
+             {{ chart.forecast_time|date:"D H:i"}} 
         </a>
     </li>
 
@@ -31,10 +30,12 @@
     {% for chart in charts %}
     
     <div class="tab-pane fade {% if forloop.first %} show active {% endif %}" id="tab-{{ chart.pk }}" role="tabpanel" aria-labelledby="today-tab"> 
+        <a href="{{ chart.image_file.url}}">
         <img src="{{ chart.image_file.url}}"
         class="img-fluid rounded" 
         alt = "Weather chart {{ chart.forecast_time }}"
         title = "Weather chart {{ chart.forecast_time }}">
+        </a>
     </div>
     {% endfor %}
 

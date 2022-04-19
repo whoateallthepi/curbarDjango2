@@ -53,6 +53,41 @@ class Reading(models.Model):
        return reverse ('weather:reading_detail',
                        args=[self.id])
 
+   @property
+   def rose(self):
+      # Utility to convert degrees to a human direction - probably needs to be elsewhere
+      quadrants = ["N",
+                  "NNE",
+                  "NE",
+                  "ENE",
+                  "E",
+                  "ESE",
+                  "SE",
+                  "SSE",
+                  "S",
+                  "SSW",
+                  "SW",
+                  "WSW",
+                  "W",
+                  "WNW",
+                  "NW",
+                  "NNW",
+                  "N"
+                  ]
+
+      if self.wind_speed < 0.5:
+         return "Calm"
+         
+      big_degrees = 371.25  + self.wind_dir
+      quadrant = int(big_degrees/22.5)
+
+      #force into range 0-15, with 0 = N 
+      if quadrant >= 16:
+         quadrant -= 16
+
+      return quadrants[quadrant]
+   # end of rose   
+
    
    def summary (self): 
       def rose(degrees):
