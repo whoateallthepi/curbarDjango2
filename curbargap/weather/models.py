@@ -18,6 +18,8 @@ class Station(models.Model):
    RFid = models.CharField('Station RFid', max_length=2, blank=True, null=True)
    phone = models.IntegerField('Station Phone', blank=True, null=True)
    hardwarekey = models.CharField('Station Hardware Key', max_length=16, blank=True, null=True)
+   eu_id = models.CharField('Lorawan EU-ID', max_length=16, blank=True, null=True)
+
 
    def __str__(self):
         return self.name
