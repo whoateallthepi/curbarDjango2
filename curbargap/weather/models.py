@@ -19,6 +19,8 @@ class Station(models.Model):
    phone = models.IntegerField('Station Phone', blank=True, null=True)
    hardwarekey = models.CharField('Station Hardware Key', max_length=16, blank=True, null=True)
    eu_id = models.CharField('Lorawan EU-ID', max_length=16, blank=True, null=True)
+   wow_station = models.CharField(('Station id for wow upload'), max_length=40, blank=True, null=True)
+   wow_key = models.CharField(('Authentication key for wow upload'), max_length=40, blank=True, null=True)
 
 
    def __str__(self):
