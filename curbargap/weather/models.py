@@ -21,6 +21,7 @@ class Station(models.Model):
    eu_id = models.CharField('Lorawan EU-ID', max_length=16, blank=True, null=True)
    wow_station = models.CharField(('Station id for wow upload'), max_length=40, blank=True, null=True)
    wow_key = models.CharField(('Authentication key for wow upload'), max_length=40, blank=True, null=True)
+   wow_last_upload = models.DateTimeField('Last wow upload', blank=True, null=True)
 
 
    def __str__(self):
@@ -91,6 +92,9 @@ class Reading(models.Model):
 
       return quadrants[quadrant]
    # end of rose   
+
+   class Meta:
+      indexes = [models.Index(fields=['station', 'reading_time']),]
 
    
    def summary (self): 
