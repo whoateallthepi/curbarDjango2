@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load blog_tags %}
 
 {% block title %} {{ post.title }}{% endblock %}
 
@@ -20,7 +21,7 @@
     </a>
 </figure>
 <p>
-{{ post.body|linebreaks }}
+{{ post.body|markdown }}
 </p>
 
 {% endblock %}

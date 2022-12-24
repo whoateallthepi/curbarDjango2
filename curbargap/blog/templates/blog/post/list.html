@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load blog_tags %}
 
 {% block title %}Weather Blog {% endblock %}
 
@@ -20,7 +21,7 @@
     {% load thumbnail %}
     <img src="{{ post.image|thumbnail_url:'blog_thumbnail' }}" class="img-thumbnail float-end" 
          alt ="{{ post.image_title }} " title ="{{ post.image_title }}">
-    {{ post.body|truncatewords:30|linebreaks }}
+    {{ post.body|markdown|truncatewords_html:30 }}
     
 </p>
 </div>
