@@ -2,6 +2,7 @@ from django.db import models, connection
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
+from weather.astrodata import AstroData 
 
 
 #import time
@@ -147,11 +148,35 @@ class Reading(models.Model):
 class AstronomicalData(models.Model):
    station = models.ForeignKey(Station,on_delete=models.CASCADE)
    date = models.DateField('Date')
-   sunrise = models.DateTimeField('Sunrise')
-   sunset = models.DateTimeField('Sunset')
-   moonrise = models.DateTimeField('Moonrise')
-   moonset = models.DateTimeField('Moonset')
-   moonphase = models.DecimalField('Phase', max_digits=4, decimal_places=1, default=0, blank=True, null=True)
+   sunrise = models.DateTimeField('Sunrise', blank=True, null=True)
+   sunset = models.DateTimeField('Sunset', blank=True, null=True)
+   moonrise = models.DateTimeField('Moonrise', blank=True, null=True)
+   moonset = models.DateTimeField('Moonset', blank=True, null=True)
+   moonphase = models.DecimalField('Phase 0-360', max_digits=4, decimal_places=1, default=0, blank=True, null=True)
+
+   def save (self, *args, **kwargs):
+      if not self.pk: # this is a new record so populate 
+         s =  Station.objects.get(pk=self.station.id)
+         ad = AstroData(s.latitude, s.longitude, self.date)
+         sun = ad.sun_times
+         self.sunrise = sun['rise']
+         self.sunset = sun['set']
+         moon = ad.moon_times
+         self.moonrise = moon['rise']
+         self.moonset = moon['set']
+         self.moonphase = moon['phase']
+         super().save(*args, **kwargs)
+
+   def get_absolute_url(self):
+      return reverse ('astrodata:detail',
+                       args=[self.id])
+
+   class Meta:
+      indexes = [models.Index(fields=['station', 'date']),]
+      unique_together = [['station', 'date']]
+
+
+   
 
 
 # the following are for weather forecasts via Met Office DataPoint

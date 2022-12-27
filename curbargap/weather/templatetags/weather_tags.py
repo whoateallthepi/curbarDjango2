@@ -1,6 +1,9 @@
 from django import template
 from ..models import Reading
+from ..models import AstronomicalData, Station
 from blog.models import Post
+from datetime import datetime
+from django.utils import timezone
 
 
 from django.conf import settings
@@ -18,6 +21,15 @@ def show_latest_reading(station=settings.DEFAULT_STATION):
 def temperature_now (station=settings.DEFAULT_STATION):
     lr=LatestReading(station=station) # note stations are different for readings
 
-    return { 'latest_reading' : lr.reading,
-             
-    }
+    return { 'latest_reading' : lr.reading,}
+
+@register.inclusion_tag('weather/astronomicaldata/today.html')
+def show_todays_astrodata(station=settings.DEFAULT_STATION):
+    
+    today = datetime.utcnow().date()
+
+    ss = Station.objects.get(pk=settings.DEFAULT_STATION)
+    
+    astro, created = AstronomicalData.objects.get_or_create(station=ss, date = today)
+    
+    return { 'astro_data' : astro,}    

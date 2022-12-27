@@ -4,7 +4,13 @@ from django.shortcuts import get_object_or_404
 
 from .models import Reading, Forecast, Timestep, Day, Symbol
 from .utils import rose, get_symbol
-from datetime import timedelta
+from datetime import timedelta, datetime
+
+from skyfield import almanac
+from skyfield.api import N, W, wgs84, load
+from skyfield.framelib import ecliptic_frame
+
+import datetime, pytz
 
 class LatestForecast (object):
     # Would be sensible to rewrite with forecast_view 
@@ -116,6 +122,7 @@ class WeatherSummary(object):
         rain_total = total['rain_since_last__sum']
         return { 'rain_total' : rain_total, }
 
-class AstroData(object):
-    def __init__(self, latitude, longitude, date):
-        pass
+
+
+
+

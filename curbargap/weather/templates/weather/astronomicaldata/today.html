@@ -1,0 +1,17 @@
+<p class = 'text-light'> Sun rises: {{ astro_data.sunrise|date:"H:i" }}<br>
+    Sun sets: {{ astro_data.sunset|date:"H:i" }}<br>
+    Moon rises : 
+    {% if astro_data.moonrise %}
+        {{ astro_data.moonrise|date:"H:i"}}<br>
+    {% else %}
+        &ndash;
+    {% endif %}    
+    Moon sets: 
+    {% if astro_data.moonset %}
+        {{ astro_data.moonset|date:"H:i"}}<br>
+    {% else %}
+        &ndash;
+    {% endif %}   
+    
+    Phase: {{ astro_data.moonphase }} /360&deg; 
+</p>

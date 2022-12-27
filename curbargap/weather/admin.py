@@ -9,6 +9,7 @@ from .models import Day
 from .models import Timestep
 from .models import Symbol
 from .models import Image
+from .models import AstronomicalData
 
 #admin.site.register(Station)
 #admin.site.register(Reading)
@@ -41,3 +42,8 @@ class SymbolAdmin(admin.ModelAdmin):
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
   list_display = [field.name for field in Image._meta.get_fields()]  
+
+@admin.register(AstronomicalData)
+class AstronomicalData(admin.ModelAdmin):
+  list_display = ('station', 'date', 'sunrise', 'sunset')
+  list_filter = ('station_id', 'date')  
