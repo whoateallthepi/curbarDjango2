@@ -74,13 +74,14 @@ class SummaryForecastView(View):
         for day in dates[0:3]:
             timeseries = t1.filter(series_time__date=day).filter(series_time__gt=past_hour) # exclude expired forecasts
             # if the last of the timeseries is before 9pm - likely this is day 2 
-            # (days go 0,1,2) and the houly forecsts are not a complete day. 
+            # (days go 0,1,2) and the hourly forecsts are not a complete day. 
             # We need to fill in the rest of the day with data from the 3-hourly forecast
             #
-            last_reading = timeseries[(len(timeseries)-1)].series_time
-            if last_reading.time() < ninePM:
-                timeseries_extra = t3.filter(series_time__date=day).filter(series_time__gt=last_reading)
-                timeseries = timeseries|timeseries_extra
+            if len(timeseries) > 0:
+                last_reading = timeseries[(len(timeseries)-1)].series_time
+                if last_reading.time() < ninePM:
+                    timeseries_extra = t3.filter(series_time__date=day).filter(series_time__gt=last_reading)
+                    timeseries = timeseries|timeseries_extra
 
             tables.append(TimeSeriesTable(timeseries, orderable=False))                    
 
