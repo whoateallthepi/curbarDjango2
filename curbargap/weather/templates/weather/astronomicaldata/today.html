@@ -4,13 +4,13 @@
     {% if astro_data.moonrise %}
         {{ astro_data.moonrise|date:"H:i"}}<br>
     {% else %}
-        &ndash;
+        &ndash;<br>
     {% endif %}    
     Moon sets: 
     {% if astro_data.moonset %}
         {{ astro_data.moonset|date:"H:i"}}<br>
     {% else %}
-        &ndash;
+        &ndash;<br>
     {% endif %}   
     
     Phase: {{ astro_data.moonphase }} /360&deg; 

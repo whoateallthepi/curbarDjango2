@@ -162,8 +162,10 @@ class AstronomicalData(models.Model):
          self.sunrise = sun['rise']
          self.sunset = sun['set']
          moon = ad.moon_times
-         self.moonrise = moon['rise']
-         self.moonset = moon['set']
+         if 'rise' in moon:
+            self.moonrise = moon['rise']
+         if 'set' in moon:   
+            self.moonset = moon['set']
          self.moonphase = moon['phase']
          super().save(*args, **kwargs)
 
@@ -174,9 +176,6 @@ class AstronomicalData(models.Model):
    class Meta:
       indexes = [models.Index(fields=['station', 'date']),]
       unique_together = [['station', 'date']]
-
-
-   
 
 
 # the following are for weather forecasts via Met Office DataPoint

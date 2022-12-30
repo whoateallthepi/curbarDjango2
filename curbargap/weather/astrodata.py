@@ -44,7 +44,7 @@ class AstroData(object):
         
         #assume time of next midnight
         
-        moon_data = {'phase': 0, 'percent': 0, 'rise': 0, 'set' : 0}
+        moon_data = {}
 
         e = earth.at(self.ts.utc(self.next_midnight))
         s = e.observe(sun).apparent()
