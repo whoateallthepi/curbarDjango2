@@ -53,11 +53,11 @@ class EUMetsat(object):
     def process_image (self, chain= 'hrseviri_nwe', output_type = "*.png", write_to_DB = True):
         if self.datatailor is None:
             self.datatailor = eumdac.DataTailor(self.token) 
-
-        chain =  self.datatailor.chains.read(chain)
+        #breakpoint()
+        ch =  self.datatailor.chains.read(chain)
         # Run the customnisation
-
-        customisation = self.datatailor.new_customisation(self.selected, chain=chain)
+        #breakpoint()
+        customisation = self.datatailor.new_customisation(self.selected, chain=ch)
 
         print(f'The status of the customisation is {customisation.status}.')
         while int(customisation.progress) < 100:
@@ -77,7 +77,7 @@ class EUMetsat(object):
                                         image_time = self.selected.sensing_end.replace(tzinfo=ZoneInfo('UTC')),
                                         image_url = tempfile.name, # this will be a /tmp/...etc
                                         #image_file = tempfile,
-                                        processing_details = chain.filter)
+                                        processing_details = ch.filter)
                 s_image.save()
             
             customisation.delete()    
@@ -87,7 +87,12 @@ class EUMetsat(object):
             self.datatailor = eumdac.DataTailor(self.token)
 
         for customisation in self.datatailor.customisations:
-            customisation.delete()    
+           try: 
+               customisation.delete()
+           except eumdac.customisation.CustomisationError as error:
+               print("Customisation Error:", error)
+           except Exception as error:
+               print("Unexpected error:", error)
 
 class DataPoint(object):
     

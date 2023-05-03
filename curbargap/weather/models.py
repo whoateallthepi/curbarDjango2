@@ -159,8 +159,11 @@ class AstronomicalData(models.Model):
          s =  Station.objects.get(pk=self.station.id)
          ad = AstroData(s.latitude, s.longitude, self.date)
          sun = ad.sun_times
-         self.sunrise = sun['rise']
-         self.sunset = sun['set']
+         if 'rise' in sun:
+            self.sunrise = sun['rise']
+         if 'set' in sun:
+            self.sunset = sun['set']
+         
          moon = ad.moon_times
          if 'rise' in moon:
             self.moonrise = moon['rise']
