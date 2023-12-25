@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'forecast.apps.ForecastConfig',
     'chart.apps.ChartConfig',
+    'warning.apps.WarningConfig',
     'django_filters',
     'django_tables2',
     'easy_thumbnails',
@@ -156,6 +157,10 @@ DATAPOINT_URL = "datapoint.metoffice.gov.uk"
 CHARTS_URL = "/public/data/image/wxfcs/surfacepressure/json/capabilities?key={datapoint_key}"
 SATELLITES_URL = "/public/data/layer/wxobs/all/json/capabilities?key={datapoint_key}"
 
+# the following are for Met Office NSWWS API calls (weather warnings)
+NSWWS_BASE_URL = 'prd.nswws.api.metoffice.gov.uk'
+NSWWS_FEEDS_URL = '/v1.0/objects/feed'
+   
 LATITUDE = 53.27041002136657
 LONGITUDE = -1.6239021210600733
 
