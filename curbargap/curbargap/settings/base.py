@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'django_filters',
     'django_tables2',
     'easy_thumbnails',
-]
+    'django.contrib.gis',
+    'leaflet',
+    'djgeojson'
+,]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

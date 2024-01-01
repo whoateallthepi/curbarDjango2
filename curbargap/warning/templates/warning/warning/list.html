@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Warning list {% endblock %}
+
+{% block content %}
+
+<h1>Warnings</h1>
+ 
+{% for warning in warnings %}
+<div class="border-bottom mb-4 pb-2">
+<h4>
+    <a href="{{ warning.get_absolute_url }}"> 
+    {{ warning.warningHeadline|truncatewords:40 }}      
+        
+    </a></h4>
+    
+    <p> 
+        {% for r in warning.display_regions %}
+        {{ r }}
+        {% if not forloop.last %},
+        {% endif %}
+        {% endfor %}
+    </p>
+    <p><strong>Level: {{ warning.get_warningLevel_display }} warning of
+        {% for wt in warning.display_weatherType %}
+    {{ wt }}
+    {% if not forloop.last %},
+    {% endif %}
+    {% endfor %}
+    </strong></p>
+
+    <p>
+    Valid: {{ warning.validFromDate }} to {{ warning.validToDate }}
+    
+    <br>
+    Status:{{ warning.get_warningStatus_display }}
+    </p>
+
+</div>
+{% endfor %}
+{% include "pagination.html" with page=page_obj %}
+{% endblock %}

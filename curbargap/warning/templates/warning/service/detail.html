@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Service Details {% endblock %}
+
+{% block content %}
+
+<h1>Service</h1>
+<div class="border-bottom mb-4 pb-2">
+<p >
+   id: {{ service.id }}<br>
+   Name: {{ service.name }}<br>
+   Last Update: {{ service.lastUpdate }}
+</p>
+
+</div>
+
+{% endblock %}

@@ -26,6 +26,7 @@ urlpatterns = [
     path('blog/', include('blog.urls', namespace='blog')),
     path('forecast/', include ('forecast.urls', namespace='forecast')),
     path('chart/', include ('chart.urls', namespace='chart')),
+    path('warning/', include('warning.urls',namespace='warning'))
 ]
 
 if settings.DEBUG:

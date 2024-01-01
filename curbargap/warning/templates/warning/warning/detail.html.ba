@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Service Details {% endblock %}
+
+{% block content %}
+
+<h1>Warning</h1>
+<div class="border-bottom mb-4 pb-2">
+<p >
+   id: {{ warning.warningId }}<br>
+   Service: {{ warning.service.name }}<br>
+   issuedDate: {{ warning.issuedDate}}<br>
+   weatherType: 
+   {% for wt in warning.display_weatherType %}
+   {{ wt }}
+   {% endfor %}
+   <br>
+   warningLikelihood: {{ warning.warningLikelihood }}<br>
+   warningLevel: {{ warning.get_warningLevel_display }}<br>
+   warningImpact: {{ warning.get_warningImpact_display }}<br>
+   warningStatus: {{ warning.get_warningStatus_display }}<br>
+   warningHeadline: {{ warning.warningHeadline }}<br>
+   whatToExpect: {{ warning.whatToExpect }}<br>
+   modifiedDate: {{ warning.modifiedDate }}<br>
+   validFromDate: {{ warning.validFromDate }}<br>
+   validToDate: {{ warning.validToDate }}<br>
+   affectedAreas: {{ warning.affectedAreas }}</br>
+</p>
+
+   
+   
+
+</div>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 import http.client
 import feedparser
 import json
+from django.utils.dateparse import parse_datetime
 
 from warning.models import Warning, Service
 
@@ -23,11 +24,21 @@ class Nswws(object):
 
     def check(self):
         self.updates = []
+         
         self._conn.request("GET", self.feeds_url, headers=self.headers)
         data = self._conn.getresponse().read()
         p = feedparser.parse(data)
         self.latest_list_url = p['feed']['links'][1]['href']
         self.updated = p['feed']['updated']
+        #
+        # check if there has been an update since last check
+        # If not we can quit
+        service = Service.objects.get(pk=self.service_id)
+        
+        if parse_datetime(self.updated) <= service.lastUpdate:
+            print('no new updates')
+            return False
+        
         if 'entries' not in p:
             # means there are no updates but latest list will be available in 
             # self.latest_list_url
@@ -44,45 +55,69 @@ class Nswws(object):
         else:
             return False
         
-    def fetch_updates(self):
-        print('Update')
-        #breakpoint()
-        updates = []
-        for update in self.updates:
+    def fetch_updates(self,force_all=False):
+        # helper function to create the dict we need for updating database
+        def generate_update_dict(feature):
             u = {}
+            u['issuedDate'] = feature['properties']['issuedDate']
+            u['weatherType'] = feature['properties']['weatherType']
+            u['warningLikelihood'] = feature['properties']['warningLikelihood']
+            u['warningLevel'] = feature['properties']['warningLevel']
+            u['warningStatus'] = feature['properties']['warningStatus']
+            u['warningHeadline'] = feature['properties']['warningHeadline']
+            u['whatToExpect'] = feature['properties']['whatToExpect']
+            u['warningId'] = feature['properties']['warningId']
+            u['modifiedDate'] = feature['properties']['modifiedDate']
+            u['validFromDate'] = feature['properties']['validFromDate']
+            u['validToDate'] = feature['properties']['validToDate']
+            u['affectedAreas'] = json.dumps(feature['properties']['affectedAreas'])
+            u['warningImpact'] = feature['properties']['warningImpact']
+            u['geometry'] = feature['geometry']
+            gg = json.dumps(u['geometry'])
+            #u['geojson'] = '{ "type": "Feature", "geometry" : ' + gg + ', "properties": { "name": "warning area" }}'
+            return u
+        
+        updates = []
+        #
+        # This is where we get all the updates - usually not required
+        #
+        if force_all:
+            print('fetching all current warnings')
+            url = self.latest_list_url.split('https://'+ self.base_url,1)[1]
             
+            self._conn.request("GET",url, headers=self.headers)
+            data = self._conn.getresponse().read()
+            j = json.loads(data)
+            features = j['features']
+            for feature in features:
+                updates.append(generate_update_dict(feature))
+                 
+            return updates # a list of dictionaries        
+        #
+        # This is the more common processin where we just get the updates
+        # since last check. The URLs for the warnings have been stored at 
+        # the check stage
+        #        
+        print('fetching all new warnings/updates')
+        
+        for update in self.updates:
+           
             url, action, time = update # unpack the update
             
             # get the warning details
-            self._conn.request("GET", url, headers=self.headers)
             url = url.split('https://'+ self.base_url,1)[1]
-            #breakpoint()
+            self._conn.request("GET", url, headers=self.headers)
+             
             data = self._conn.getresponse().read()
             
             # should be json data
             j = json.loads(data)
            
             # Pick out the useful stuff
-            f1 = j['features'][0] # assuming one feature per warning??
-            breakpoint()
-            
-            u['issuedDate'] = f1['properties']['issuedDate']
-            u['weatherType'] = f1['properties']['weatherType']
-            u['warningLikelihood'] = f1['properties']['warningLikelihood']
-            u['warningLevel'] = f1['properties']['warningLevel']
-            u['warningStatus'] = f1['properties']['warningStatus']
-            u['warningHeadline'] = f1['properties']['warningHeadline']
-            u['whatToExpect'] = f1['properties']['whatToExpect']
-            u['warningId'] = f1['properties']['warningId']
-            u['modifiedDate'] = f1['properties']['modifiedDate']
-            u['validFromDate'] = f1['properties']['validFromDate']
-            u['validToDate'] = f1['properties']['validToDate']
-            u['affectedAreas'] = json.dumps(f1['properties']['affectedAreas'])
-            u['warningImpact'] = f1['properties']['warningImpact']
-            u['geometry'] = f1['geometry']
-            
-            updates.append(u)
-
+            features = j['features'] # only appears to be one feature but loop to be sure
+            for feature in features:
+                updates.append(generate_update_dict(feature))
+        
         return updates # an list of dictionaries
     
     def store_updates(self, updates):
@@ -130,7 +165,7 @@ class Nswws(object):
             
             # concatenate whatToExpect entries into one string
             for expect in update['whatToExpect']:
-                wte = wte + expect + '\n'
+                wte = wte + expect + '. '
 
             warning = Warning(
                 warningId = update['warningId'],
@@ -147,15 +182,13 @@ class Nswws(object):
                 validToDate = update['validToDate'],
                 affectedAreas = update['affectedAreas'],
                 warningImpact = update['warningImpact'],
-                geometry = update['geometry'],
-            )
-            breakpoint()    
+                geometry = json.dumps(update['geometry']),
+                )
+            #breakpoint()
+            warning.save()   
         
-        breakpoint()
-
-        warning, created = Warning.objects.get_or_create(warningId=updates[warningId])
-        breakpoint()
-
+        service.lastUpdate = self.updated
+        service.save()
     
     def close(self):
         self._conn.close()

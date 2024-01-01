@@ -3,9 +3,20 @@
 {% load weather_tags %}
 {% load blog_tags %}
 
+<!-- These are for leaflet/maps -->
+{% load geojson_tags %}
+{% load leaflet_tags %}
+
 {% load static %}
 <!DOCTYPE html>
 <html lan="en">
+<!-- Required for leaflet/maps -->
+<header>
+    {% leaflet_js %} 
+    {% leaflet_css %}  
+</header>
+
+
 <!-- Required meta tags for Bootstrap -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

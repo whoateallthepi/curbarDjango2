@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+<!-- These are for leaflet/maps -->
+{% load geojson_tags %}
+{% load leaflet_tags %}
+
+{% block title %} Warning Details {% endblock %}
+
+{% block content %}
+<h2>{{ warning.warningHeadline }}</h2>
+<h4>{{ warning.get_warningLevel_display|title }} warning  of
+{% for wt in warning.display_weatherType %}
+   {{ wt|title }}
+   {% endfor %}
+</h4>
+<p><small>In force {{ warning.validFromDate }} to  {{ warning.validToDate }} Issued {{ warning.issuedDate }}</small></p>
+
+<div class="border-bottom mb-4 pb-2">
+<h5>Areas affected</h5>
+
+<p>
+   {% for area in warning.display_regions %}
+   {{area}} 
+   {% if not forloop.last %},{% endif %}
+   {% endfor %}
+</p>
+<h5>What to expect</h5>
+<p>{{ warning.whatToExpect }}</p>
+
+<h5> Likelihood and Impact</h5>
+<p> This warning has a {{ warning.get_warningLikelihood_display }} likelihood and a 
+   {{ warning.get_warningImpact_display }} impact.  
+</p>
+
+<h5>Map of areas affected</h5>
+<div>{% leaflet_map "map" callback="map_init" %}</div>
+   <script type="text/javascript">
+   function map_init(map, options) {
+      var area = L.geoJson({{warning.get_geojson|safe}}).addTo(map);
+      map.fitBounds(area.getBounds());
+   }
+   </script>
+<p><small>Warning status: {{ warning.get_warningStatus_display|title }}. Last modified: {{ warning.modifiedDate }} id:{{ warning.warningId }}</small></p>
+  
+</div>
+
+{% endblock %}

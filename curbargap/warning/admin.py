@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib.gis import admin
 from .models import Service, Warning
 
 # Register your models here.
@@ -8,7 +8,7 @@ class ServiceAdmin(admin.ModelAdmin):
     search_fields = ('name', 'lastUpdate')
 
 @admin.register(Warning)
-class WarningAdmin(admin.ModelAdmin):
+class WarningAdmin(admin.GISModelAdmin):
     list_display = ('warningId', 'warningStatus','issuedDate', 'weatherType','warningLevel','warningHeadline' )
     search_fields = ('warningId', 'warningLevel')    
 
