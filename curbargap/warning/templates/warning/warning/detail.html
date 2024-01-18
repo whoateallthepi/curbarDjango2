@@ -7,12 +7,27 @@
 {% block title %} Warning Details {% endblock %}
 
 {% block content %}
+<h2>Met Office Weather Warning</h2>
+
+
 <h2>{{ warning.warningHeadline }}</h2>
-<h4>{{ warning.get_warningLevel_display|title }} warning  of
-{% for wt in warning.display_weatherType %}
-   {{ wt|title }}
+<p><strong><span  
+   {% if warning.warningLevel == 0 %} class = "warning_yellow" 
+   {% elif warning.warningLevel == 1 %} class = "warning_amber"
+   {% elif warning.warningLevel == 2 %} class = "warning_red"
+   {% endif %}
+   >
+   {{  warning.get_warningLevel_display|upper }}
+   </span>
+   <span class="weather">
+   {% for wt in warning.display_weatherType %}
+       {{ wt|upper }}
+       
    {% endfor %}
-</h4>
+   </span>
+   
+</strong></p>
+
 <p><small>In force {{ warning.validFromDate }} to  {{ warning.validToDate }} Issued {{ warning.issuedDate }}</small></p>
 
 <div class="border-bottom mb-4 pb-2">
@@ -35,8 +50,23 @@
 <h5>Map of areas affected</h5>
 <div>{% leaflet_map "map" callback="map_init" %}</div>
    <script type="text/javascript">
+   
    function map_init(map, options) {
-      var area = L.geoJson({{warning.get_geojson|safe}}).addTo(map);
+      function polystyle(feature) {
+      return {
+         fillColor:  {% if warning.warningLevel == 0 %} 'yellow', 
+                     {% elif warning.warningLevel == 1 %} 'orange',
+                     {% elif warning.warningLevel == 2 %} 'red', {% endif %}
+         weight: 2,
+         opacity: 1,
+         color:      {% if warning.warningLevel == 0 %} 'yellow', 
+                     {% elif warning.warningLevel == 1 %} 'orange',
+                     {% elif warning.warningLevel == 2 %} 'red', {% endif %}
+         fillOpacity: 0.3
+      };
+   }
+      
+      var area = L.geoJson({{warning.get_geojson|safe}}, {style: polystyle}).addTo(map);
       map.fitBounds(area.getBounds());
    }
    </script>

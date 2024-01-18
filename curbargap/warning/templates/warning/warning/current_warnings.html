@@ -1,0 +1,36 @@
+{% load static %}
+<h5 class = 'text-light text-center'> Met Office Weather Warnings</h5>
+<a href = "/warning/warning/?status=1&active=active&area=local">
+    <h6 class = 'text-light text-center'>Local warnings</h6>
+</a>    
+
+{% for w in local_warnings %}
+
+
+<p> 
+    <a href = "{{ w.get_absolute_url }}"> 
+        <img src=   {% if w.warningLevel == 0 %} "{% static "icons/yellow.png" %}" 
+                {% elif w.warningLevel == 1 %} "{% static "icons/amber.png" %}"
+                {% elif w.warningLevel == 2 %} "{% static "icons/red.png" %}" {% endif %}  
+        class="img-fluid float-left " width="40" height ="40" class="d-inline-block align-top" 
+        alt ="{{ w.get_warningLevel_display }} warning" title ="{{ w.get_warningLevel_display }} warning">
+    </a>
+
+    <span class="weather"><strong>
+    {% for wt in w.display_weatherType %}
+        {{ wt|upper }}
+    {% endfor %}
+</strong>
+</span><br>
+<span class = 'text-light small fst-italic'> 
+    from: {{ w.validFromDate|date:"P"}} on 
+    {{ w.validFromDate|date:"D, d M, Y"}}</span>        
+
+</p>
+
+{% endfor %}
+
+<a href = "/warning/warning/?status=1&active=active&area=all">
+<h6 class = 'text-light text-center'> All warnings ( {{ all_warnings| length }} )</h6> </a>
+
+

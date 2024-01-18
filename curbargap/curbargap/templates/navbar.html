@@ -1,12 +1,14 @@
 <!-- Image and text -->
 {% load weather_tags %}
 {% load forecast_tags %}
+{% load warning_tags %}
 
 <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
     <div class="container">
+      {% show_alert %}
       {% show_latest_forecast %}
       <span class="navbar-brand">  {% temperature_now %}&nbsp;</span>
-      <a class="navbar-brand" href="#">  
+      <a class="navbar-brand" href="/">  
        curbargap.info
       
       </a>
@@ -28,6 +30,19 @@
                   <li><a class="dropdown-item" href="/weather/forecast/full/511">Full text</a></li>
                 </ul>
               </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Warnings
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <li><a class="dropdown-item" href="/warning/warning/?status=1&active=active&area=local">Local</a></li>
+                  <li><a class="dropdown-item" href="/warning/warning/?status=1&active=active&area=all">All</a></li>
+                </ul>
+              </li>
+
+
+
 
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">

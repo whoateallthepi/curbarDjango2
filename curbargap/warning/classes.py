@@ -22,23 +22,23 @@ class Nswws(object):
     def close(self):
         self._conn.close()
 
-    def check(self):
+    def check(self, last_check):
         self.updates = []
          
         self._conn.request("GET", self.feeds_url, headers=self.headers)
         data = self._conn.getresponse().read()
         p = feedparser.parse(data)
         self.latest_list_url = p['feed']['links'][1]['href']
-        self.updated = p['feed']['updated']
+        self.feed_updated = parse_datetime(p['feed']['updated'])
         #
         # check if there has been an update since last check
         # If not we can quit
-        service = Service.objects.get(pk=self.service_id)
+        # service = Service.objects.get(pk=self.service_id)
         
-        if parse_datetime(self.updated) <= service.lastUpdate:
+        if self.feed_updated <= last_check:
             print('no new updates')
             return False
-        
+
         if 'entries' not in p:
             # means there are no updates but latest list will be available in 
             # self.latest_list_url

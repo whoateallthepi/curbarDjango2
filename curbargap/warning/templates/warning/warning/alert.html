@@ -1,0 +1,12 @@
+{% load static %}
+
+<a href = "/warning/warning/?status=1&active=active&area=local">
+    {% for a in alert %}
+        <img src=   {% if a.warningLevel == 0 %} "{% static "icons/yellow.png" %}" 
+                    {% elif  a.warningLevel == 1 %} "{% static "icons/amber.png" %}"
+                    {% elif  a.warningLevel == 2 %} "{% static "icons/red.png" %}" {% endif %}  
+        class="img-fluid float-left " width="40" height ="40" class="d-inline-block align-top" 
+        alt ="{{ a.get_warningLevel_display }} warning" title ="{{ a.get_warningLevel_display }} warning">
+    {% endfor %}
+
+</a>

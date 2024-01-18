@@ -1,0 +1,16 @@
+.warning_yellow {
+    background-color:#FFE923;
+}
+
+.warning_amber {
+    background-color:#FF9900;  
+}
+
+.warning_red {
+    background-color:#CC0033;  
+}
+
+.weather {
+    color:white;
+    background-color: black;
+}

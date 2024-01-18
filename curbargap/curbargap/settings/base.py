@@ -161,14 +161,17 @@ CHARTS_URL = "/public/data/image/wxfcs/surfacepressure/json/capabilities?key={da
 SATELLITES_URL = "/public/data/layer/wxobs/all/json/capabilities?key={datapoint_key}"
 
 # the following are for Met Office NSWWS API calls (weather warnings)
-NSWWS_BASE_URL = 'prd.nswws.api.metoffice.gov.uk'
-NSWWS_FEEDS_URL = '/v1.0/objects/feed'
+
    
 LATITUDE = 53.27041002136657
 LONGITUDE = -1.6239021210600733
 
+LOCALITY = 'Curbar' # saves hardcoding
+
 DEFAULT_STATION = 5 
 DEFAULT_FORECAST_STATION = 351418
+
+DEFAULT_WARNING_SERVICE = 1
 
 # Dates
 SHORT_DATE_FORMAT = "d/m/Y"

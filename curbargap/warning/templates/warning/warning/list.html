@@ -4,11 +4,29 @@
 
 {% block content %}
 
-<h1>Warnings</h1>
+<h2>Met Office Weather Warnings {{ title }}</h2>
  
 {% for warning in warnings %}
 <div class="border-bottom mb-4 pb-2">
-<h4>
+    <p><strong><span  
+        {% if warning.warningLevel == 0 %} class = "warning_yellow" 
+        {% elif warning.warningLevel == 1 %} class = "warning_amber"
+        {% elif warning.warningLevel == 2 %} class = "warning_red"
+        {% endif %}
+        >
+        {{  warning.get_warningLevel_display|upper }}
+        </span>
+        <span class="weather">
+        {% for wt in warning.display_weatherType %}
+            {{ wt|upper }}
+            
+        {% endfor %}
+        </span>
+        
+    </strong></p>
+
+
+    <h4>
     <a href="{{ warning.get_absolute_url }}"> 
     {{ warning.warningHeadline|truncatewords:40 }}      
         
@@ -21,17 +39,10 @@
         {% endif %}
         {% endfor %}
     </p>
-    <p><strong>Level: {{ warning.get_warningLevel_display }} warning of
-        {% for wt in warning.display_weatherType %}
-    {{ wt }}
-    {% if not forloop.last %},
-    {% endif %}
-    {% endfor %}
-    </strong></p>
-
-    <p>
-    Valid: {{ warning.validFromDate }} to {{ warning.validToDate }}
     
+    <p>
+        From {{ warning.validFromDate|date:"P"}} on {{ warning.validFromDate|date:"D, d M, Y"}} 
+        to  {{ warning.validToDate|date:"P"}} on {{ warning.validToDate|date:"D, d M, Y"}}
     <br>
     Status:{{ warning.get_warningStatus_display }}
     </p>
