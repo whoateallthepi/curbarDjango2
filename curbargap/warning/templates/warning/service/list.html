@@ -17,6 +17,8 @@
 </p>
 
 </div>
+{% empty %}
+<p>None</p>
 {% endfor %}
 {% include "pagination.html" with page=page_obj %}
 {% endblock %}

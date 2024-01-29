@@ -2,13 +2,12 @@ from django.conf import settings
 from django.db import connection
 from django.utils import dateparse
 from .models import Chart, ChartRun, SatelliteImage
+from datetime import datetime, timedelta
 
 from zoneinfo import ZoneInfo
 
 import http.client
 import json
-
-from datetime import timedelta
 
 import eumdac
 import time
@@ -40,7 +39,13 @@ class EUMetsat(object):
         self.collection = self.datastore.get_collection(product_name)
 
     def get_first_in_collection (self):
-        self.selected = self.collection.search().first()
+        # don't pick anything up from past hour as we may not have the correct licence
+        # and this will fail at the datatailor stage
+        now = datetime.utcnow()
+        latest_time = now - timedelta(hours=1)
+        self.selected = self.collection.search(dtend=latest_time).first()
+
+        #self.selected = self.collection.search().first()
 
     def list_chains (self, product='HRSEVIRI'):
         if self.datatailor is None:
@@ -50,7 +55,7 @@ class EUMetsat(object):
             print(chain)
             print('---')    
 
-    def process_image (self, chain= 'hrseviri_nwe', output_type = "*.png", write_to_DB = True):
+    def process_image (self, chain= 'nw_europe with quicklook', output_type = "*.png", write_to_DB = True):
         if self.datatailor is None:
             self.datatailor = eumdac.DataTailor(self.token) 
         #breakpoint()

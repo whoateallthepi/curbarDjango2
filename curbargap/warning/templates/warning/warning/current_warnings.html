@@ -27,7 +27,8 @@
     {{ w.validFromDate|date:"D, d M, Y"}}</span>        
 
 </p>
-
+{% empty %}
+<p class = 'text-light text-center'>None</p>
 {% endfor %}
 
 <a href = "/warning/warning/?status=1&active=active&area=all">

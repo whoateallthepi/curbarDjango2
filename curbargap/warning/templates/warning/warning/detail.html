@@ -28,7 +28,8 @@
    
 </strong></p>
 
-<p><small>In force {{ warning.validFromDate }} to  {{ warning.validToDate }} Issued {{ warning.issuedDate }}</small></p>
+<p><small>In force {{ warning.validFromDate|date:"P"}} on {{ warning.validFromDate|date:"D, d M, Y"}} 
+    to  {{ warning.validToDate|date:"P"}} on {{ warning.validToDate|date:"D, d M, Y"}} . Issued {{ warning.issuedDate }}</small></p>
 
 <div class="border-bottom mb-4 pb-2">
 <h5>Areas affected</h5>
@@ -52,6 +53,29 @@
    <script type="text/javascript">
    
    function map_init(map, options) {
+      
+      function getHtml() {
+         html1 = '<strong><span class = {% if warning.warningLevel == 0 %}  "warning_yellow"> YELLOW </span>'
+            {% elif warning.warningLevel == 1 %} "warning_amber" > AMBER </span>'
+            {% elif warning.warningLevel == 2 %} "warning_red" > RED </span>'
+            {% endif %}
+        
+         html1 = html1 + '</strong>'
+
+         html2 = '<strong><span class="weather">'
+
+         html3 = '{% for wt in warning.display_weatherType %} {{ wt|upper }} {% endfor %} </span></strong>'
+
+         return html1+ html2 + html3;
+      }
+
+      function onEachFeature(feature, layer) {
+         // does this feature have a property named popupContent?
+  
+      layer.bindTooltip(getHtml(), { permanent: true, direction: "center",});
+      //layer.bindTooltip("another test");
+      }
+
       function polystyle(feature) {
       return {
          fillColor:  {% if warning.warningLevel == 0 %} 'yellow', 
@@ -66,7 +90,7 @@
       };
    }
       
-      var area = L.geoJson({{warning.get_geojson|safe}}, {style: polystyle}).addTo(map);
+      var area = L.geoJson({{warning.get_geojson|safe}}, {style: polystyle, onEachFeature: onEachFeature,}).addTo(map);
       map.fitBounds(area.getBounds());
    }
    </script>

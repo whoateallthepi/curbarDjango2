@@ -35,15 +35,15 @@ class WarningListView(ListView):
     title = '' # used in template to display type of list 
 
     def get_queryset(self):
-        status = self.request.GET.get('status', '3') # 0 = expired 1 = issued 3 = all
-        in_force = self.request.GET.get('active', 'all') # test on date  all/current/historic
+        status = self.request.GET.get('status', '1') # 0 = expired 1 = issued 3 = all
+        in_force = self.request.GET.get('active', 'active') # test on date  all/current/historic
         area =  self.request.GET.get('area', 'all') # all / local
         order_by = self.request.GET.get('order', 'date') # date (start date) or 'closest'
         
         
         self.title = ''
 
-        queryset = Warning.objects.all()
+        queryset = Warning.objects.all().order_by("validFromDate")
         #set up filters
         # status
         if status.isnumeric():
@@ -54,7 +54,7 @@ class WarningListView(ListView):
             if st == 0:
                 self.title = self.title + ' expired '
             elif st == 3:
-                self.title = self.title + ' expired and current'
+                self.title = self.title + ' expired, current and cancelled'
 
         # no longer current
         if in_force == 'active':
@@ -85,14 +85,14 @@ class WarningDetailView(DetailView, FormView):
     queryset = Warning.objects.all()
     template_name = 'warning/warning/detail.html'
  
-def get_map(request):
+#def get_map(request):
     # we won't  get a post
-    if request.method == "POST":
-        print('post')
-    else:
-        form = MapForm(initial={"map": '{"type": "MultiPolygon", "coordinates": [[[[-2.6669, 54.0094], [-2.7219, 54.0175], [-2.9086, 54.0175], [-2.9883, 53.9997], [-3.0927, 53.8946], [-3.1174, 53.8444], [-3.1393, 53.799], [-3.1009, 53.7065], [-3.0075, 53.6577], [-2.8619, 53.5958], [-2.6587, 53.5583], [-2.5214, 53.5403], [-2.3566, 53.5175], [-2.2742, 53.4995], [-2.2028, 53.488], [-2.1423, 53.475], [-2.0792, 53.4603], [-2.016, 53.475], [-1.972, 53.5175], [-1.9254, 53.5517], [-1.8979, 53.5941], [-1.8979, 53.6739], [-1.9226, 53.7438], [-1.9501, 53.7763], [-2.0242, 53.8234], [-2.1725, 53.8833], [-2.2659, 53.9173], [-2.3126, 53.9383], [-2.4884, 53.9884], [-2.623, 54.0078], [-2.6669, 54.0094]]]]}'})    
-    
-    return render(request, "detail.html", {"form": form})    
+#    if request.method == "POST":
+#        print('post')
+#    else:
+#        form = MapForm(initial={"map": '{"type": "MultiPolygon", "coordinates": [[[[-2.6669, 54.0094], [-2.7219, 54.0175], [-2.9086, 54.0175], [-2.9883, 53.9997], [-3.0927, 53.8946], [-3.1174, 53.8444], [-3.1393, 53.799], [-3.1009, 53.7065], [-3.0075, 53.6577], [-2.8619, 53.5958], [-2.6587, 53.5583], [-2.5214, 53.5403], [-2.3566, 53.5175], [-2.2742, 53.4995], [-2.2028, 53.488], [-2.1423, 53.475], [-2.0792, 53.4603], [-2.016, 53.475], [-1.972, 53.5175], [-1.9254, 53.5517], [-1.8979, 53.5941], [-1.8979, 53.6739], [-1.9226, 53.7438], [-1.9501, 53.7763], [-2.0242, 53.8234], [-2.1725, 53.8833], [-2.2659, 53.9173], [-2.3126, 53.9383], [-2.4884, 53.9884], [-2.623, 54.0078], [-2.6669, 54.0094]]]]}'})    
+#    
+ #   return render(request, "detail.html", {"form": form})    
 
 
 class FetchWarnings(View):
@@ -125,6 +125,11 @@ class FetchWarnings(View):
                 return 0
             if warningStatus == 'ISSUED':
                 return 1
+            if warningStatus == 'CANCELLED':
+                return 2
+            else:
+                return 3
+            
         def decodeLevel(warningLevel):
             if warningLevel == 'YELLOW':
                 return 0
@@ -132,6 +137,7 @@ class FetchWarnings(View):
                 return 1
             if warningLevel == 'RED':
                 return 2
+            
             return 3
 
         service = Service.objects.get(pk=service_id)
@@ -165,6 +171,10 @@ class FetchWarnings(View):
                 geometry = json.dumps(update['geometry']),
                 )
             #breakpoint()
+            if warning.warningStatus == 3:
+                print("**** unrecognised warningStatus")
+                print(update['warningStatus'])
+
             warning.save()   
         
         service.lastUpdate = feed_updated

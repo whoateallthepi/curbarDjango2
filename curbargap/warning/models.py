@@ -72,7 +72,9 @@ class Warning(models.Model):
 
     class Status(models.IntegerChoices):
         EXPIRED = 0, 'expired'
-        ISSUED = 1, 'issued'     
+        ISSUED = 1, 'issued'
+        CANCELLED = 2, 'cancelled' 
+        OTHER = 3, 'unknown'    
     
     warningId = models.UUIDField('Warning ID',primary_key=True)
     service =  models.ForeignKey(Service,on_delete=models.CASCADE)
@@ -108,6 +110,7 @@ class Warning(models.Model):
         #
         gg = GEOSGeometry(self.geometry) 
         gj = '{ "type": "Feature", "geometry" : '  + gg.json + ', "properties": { "name": "warning area" }}'
+        
         return gj
      
     def display_weatherType (self):
