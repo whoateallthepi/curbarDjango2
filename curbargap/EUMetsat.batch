@@ -1,0 +1,5 @@
+from chart.classes import EUMetsat
+em=EUMetsat()
+em.set_collection('EO:EUM:DAT:MSG:HRSEVIRI')
+em.get_first_in_collection()
+em.process_image()
