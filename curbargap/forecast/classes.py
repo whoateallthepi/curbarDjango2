@@ -2,24 +2,23 @@ from django.conf import settings
 from forecast.models import Forecast, TimeSeries
 import http.client
 import json
+import requests
+import time
 
 
 
 class DataHub(object):
     
-    def __init__(self, client_details=None, location = None, url = None):
-        if client_details is None:
-            self.headers = {
-                'x-ibm-client-id': settings.DATAHUB_CLIENT_ID,
-                'x-ibm-client-secret': settings.DATAHUB_CLIENT_SECRET,
-                'accept': "application/json",
-                 }
-        else:
-            self.headers = {
-                'x-ibm-client-id': client_details[0],
-                'x-ibm-client-secret': client_details[1],
-                'accept': client_details[2],
-             }
+    def __init__(self, api_key=None, location = None, url = None, retries=5):
+        self.headers = {'accept':"application/json"}
+        self.retries = retries
+        if api_key == None:
+            requestHeaders = {"apikey" : settings.DATAHUB_API_KEY}
+        else: 
+            requestHeaders = api_key 
+        
+        self.headers.update(requestHeaders)    
+       
         if location is None:
             self.latitude = str(settings.LATITUDE)
             self.longitude = str(settings.LONGITUDE)
@@ -30,13 +29,13 @@ class DataHub(object):
         else:
             self.datahub_url=url
 
-        self._conn = http.client.HTTPSConnection(self.datahub_url)
+        #self._conn = http.client.HTTPSConnection(self.datahub_url)
         
     def close(self):
-        self._conn.close()
+        #self._conn.close()
+        print("does nothing")
 
     def fetch_spot_forecast(self, type=1):
-        
         class ObjectView(object):
         # A utility to turn a dictionary into an object
             def __init__(self, d):
@@ -44,18 +43,33 @@ class DataHub(object):
         
         types = { 1 : 'hourly',
                   3 : 'three-hourly'}
-        t = types[type]          
+        t = types[type]
 
+        parameters = { 
+            'excludeParameterMetadata' : "FALSE",
+            'includeLocationName' : "TRUE",
+            'latitude' : str(self.latitude),
+            'longitude' : str(self.longitude),
+        } 
         
-        self._conn.request("GET", 
-                 "/metoffice/production/v0/forecasts/point/{type}"
-                 "?excludeParameterMetadata=false&includeLocationName=true"
-                 "&latitude={latitude}&longitude={longitude}"\
-                     .format(type=t, latitude=self.latitude, longitude=self.longitude),
-                     headers=self.headers)
-    
-        response = self._conn.getresponse()
-        data = response.read()
+        success = False
+        url = self.datahub_url + t
+
+        for _ in range(self.retries):
+            try:
+                r = requests.get(url, headers=self.headers, params=parameters)
+                success = True
+            except Exception as e:
+                print("** warning (retrying): %s",e)
+                time.sleep(5)    
+        if not success:
+            # raise some error here - check Django docs
+            print("retries exceeded contacting %s", url)
+            return
+
+        r.encoding = 'utf-8'
+
+        data = r.text
         json_data = json.loads(data)
         #
         # convert the dictioanry to objects from here - avoids too many confusing indexes
@@ -74,6 +88,7 @@ class DataHub(object):
             name = forecast_details.location['name'],
             forecast_date = forecast_details.modelRunDate,
             distance = forecast_details.requestPointDistance,)
+        #breakpoint()
         forecast.save() 
         #
         # For some reason, the three-hourly forecast uses feelsLikeTemp 
@@ -90,7 +105,9 @@ class DataHub(object):
             # use 'get' to access dictionary elements as not all values  
             # are in all forecasts
             #  
-            
+            # Some of these variables are dropped in the new API - post release
+            # review the redundant ones.
+            #
             timeseries = TimeSeries(
                 forecast=forecast,
                 feelsLikeTemperature=ts.get(flt_key),

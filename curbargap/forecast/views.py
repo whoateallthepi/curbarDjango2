@@ -35,7 +35,7 @@ class FetchForecasts(View):
             dh = DataHub()
             dh.fetch_spot_forecast(type=3) # three-hourly forecast
             dh.fetch_spot_forecast(type=1)
-            dh.close() 
+            # dh.close() 
             message = 'API matched - datahub contacted'
         else:
             message = 'API key failure'    
