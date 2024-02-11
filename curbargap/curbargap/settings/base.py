@@ -155,7 +155,8 @@ THUMBNAIL_ALIASES = {
     },
 }
 # The following are for the Met Office Datahub API calls
-DATAHUB_URL = "api-metoffice.apiconnect.ibmcloud.com"
+LEGACY_DATAHUB_URL = "api-metoffice.apiconnect.ibmcloud.com"
+DATAHUB_URL = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/"
 DATAPOINT_URL = "datapoint.metoffice.gov.uk"
 CHARTS_URL = "/public/data/image/wxfcs/surfacepressure/json/capabilities?key={datapoint_key}"
 SATELLITES_URL = "/public/data/layer/wxobs/all/json/capabilities?key={datapoint_key}"
