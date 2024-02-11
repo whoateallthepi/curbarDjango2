@@ -60,11 +60,10 @@ class DataHub(object):
                 r = requests.get(url, headers=self.headers, params=parameters)
                 success = True
             except Exception as e:
-                print("** warning (retrying): %s",e)
+                raise RuntimeWarning('retrying API')
                 time.sleep(5)    
         if not success:
-            # raise some error here - check Django docs
-            print("retries exceeded contacting %s", url)
+            raise RuntimeError('retries exceeded contacting api')
             return
 
         r.encoding = 'utf-8'
