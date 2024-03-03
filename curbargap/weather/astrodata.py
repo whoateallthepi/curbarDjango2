@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 from decimal import Decimal
-from django.utils import timezone
+from django.utils.timezone import timezone
 
 from skyfield import almanac
 from skyfield.api import N, W, wgs84, Loader

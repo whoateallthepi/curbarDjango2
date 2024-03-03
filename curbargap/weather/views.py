@@ -121,7 +121,7 @@ def regional_forecast_view(request, region_id):
     region_name = ''
     #maybe a better way of searching...
     for region in regions:
-        if region.id == str(region_id):
+        if region.location_id == str(region_id):
             region_name = region.name
             break
     
