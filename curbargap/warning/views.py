@@ -104,7 +104,7 @@ class FetchWarnings(View):
         def decodeWeatherType (weatherType):
             if weatherType == 'RAIN':
                 return 0
-            if weatherType == 'THUNDERSTORMS':
+            if weatherType == 'THUNDERSTORM':
                 return 1
             if weatherType == 'WIND':
                 return 2

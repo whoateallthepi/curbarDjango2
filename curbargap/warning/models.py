@@ -45,13 +45,14 @@ class Warning(models.Model):
 
     class WeatherType (models.IntegerChoices):
         RAIN = 0, 'rain'
-        THUNDERSTORMS = 1, 'thunderstorms'
+        THUNDERSTORM = 1, 'thunderstorm'
         WIND = 2, 'wind'
         SNOW = 3, 'snow'
         LIGHTNING = 4, 'lightning'
         ICE = 5, 'ice'
         EXTREME_HEAT = 6, 'extreme heat'
         FOG = 7, 'fog'
+        
 
     class WarningLevel(models.IntegerChoices):
         YELLOW = 0, 'yellow'   
@@ -118,7 +119,7 @@ class Warning(models.Model):
             if wt == 0:
                 return 'rain'
             if wt == 1:
-                return 'thunderstorms'
+                return 'thunderstorm'
             if wt == 2:
                 return 'wind'
             if wt == 3:
