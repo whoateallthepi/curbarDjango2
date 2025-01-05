@@ -38,17 +38,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # our apps
     'weather.apps.WeatherConfig',
     'blog.apps.BlogConfig',
     'forecast.apps.ForecastConfig',
     'chart.apps.ChartConfig',
     'warning.apps.WarningConfig',
+    #'alert.apps.AlertConfig', # moved to warning app
+    # extras
     'django_filters',
     'django_tables2',
     'easy_thumbnails',
     'django.contrib.gis',
     'leaflet',
-    'djgeojson'
+    'djgeojson',
+    'phonenumber_field'
 ,]
 
 MIDDLEWARE = [

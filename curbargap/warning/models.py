@@ -5,7 +5,11 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import GEOSGeometry
 from django.utils import timezone
 from django.urls import reverse
+from phonenumber_field.modelfields import PhoneNumberField
+from django.db import transaction
+from django.conf import settings
 
+    
 import json
 
 # Create your models here.
@@ -79,7 +83,8 @@ class Warning(models.Model):
     
     warningId = models.UUIDField('Warning ID',primary_key=True)
     service =  models.ForeignKey(Service,on_delete=models.CASCADE)
-    issuedDate = models.DateTimeField('Reading Time')
+    issuedDate = models.DateTimeField('Warning Time')
+    notifiedDate = models.DateTimeField('Notified Time', blank=True, null=True)
     weatherType = ArrayField(models.IntegerField('type',
                                       choices=WeatherType.choices))
     warningLikelihood = models.IntegerField('Likelihood',
@@ -98,6 +103,20 @@ class Warning(models.Model):
                                          choices=Impact.choices) 
     geometry = models.MultiPolygonField('Geometry',blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+
+        from warning.classes import Notification # avoid circular import...
+        def send_notify_message(warning_id):
+            nn = Notification(warning_id,settings.SMS_SERVER,settings.SMS_PORT)
+            nn.send()
+        
+        # do some clever stuff
+        print("saving warning...")
+        print(" modified date: {}, notified date: {}, issued date {}, ID {}, status {}".format(self.modifiedDate, self.issuedDate, self.notifiedDate, self.warningId,self.warningStatus))
+        
+        super(Warning, self).save(*args, **kwargs)
+        transaction.on_commit(lambda: send_notify_message(self.warningId))
+    
     def get_absolute_url(self):
         return reverse('warning:warning_detail',
                        args=[str(self.warningId)] )
@@ -149,3 +168,37 @@ class Warning(models.Model):
             region_list.append(region['regionName'])
 
         return region_list
+    
+class Location (models.Model):
+    name = models.CharField('location', max_length=50, unique=True, db_index=True)
+    area = models.MultiPolygonField('geometry',blank=True, null=True)
+
+    # force upper case
+    def save(self, *args, **kwargs):
+        self.name = self.name.upper()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name    
+    
+class Device (models.Model):
+    
+    class DeviceType (models.IntegerChoices):
+        SMS = 0, 'sms'
+
+    type = models.IntegerField('device type', choices = DeviceType.choices)
+    phoneNumber = PhoneNumberField()
+
+    def __str__(self):
+        return str(self.phoneNumber)
+
+class Subscription (models.Model):
+
+    class SubscriptionType (models.IntegerChoices):
+        WEATHER = 0, 'weather',
+        FROST = 1, 'frost',
+        FLOOD = 2, 'flood'
+    
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    type = models.IntegerField('subscription type', choices = SubscriptionType.choices)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
