@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    # our apps
     'weather.apps.WeatherConfig',
     'blog.apps.BlogConfig',
     'forecast.apps.ForecastConfig',
@@ -48,7 +50,8 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'django.contrib.gis',
     'leaflet',
-    'djgeojson'
+    'djgeojson',
+    'phonenumber_field'
 ,]
 
 MIDDLEWARE = [
@@ -81,6 +84,12 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 WSGI_APPLICATION = 'curbargap.wsgi.application'
 
