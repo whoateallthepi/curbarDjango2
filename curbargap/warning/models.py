@@ -111,11 +111,22 @@ class Warning(models.Model):
             nn.send()
         
         # do some clever stuff
-        print("saving warning...")
-        print(" modified date: {}, notified date: {}, issued date {}, ID {}, status {}".format(self.modifiedDate, self.issuedDate, self.notifiedDate, self.warningId,self.warningStatus))
         
+        print(" warning id {} modified date: {}, notified date: {}, issued date {}, ID {}, status {}".format(self.warningId, self.modifiedDate, self.issuedDate, self.notifiedDate, self.warningId,self.warningStatus))
+        
+        last_notified = self.notifiedDate
+        
+        # assume we will notify if necessary
+        self.notifiedDate = self.modifiedDate
+        
+        print("saving warning...")
         super(Warning, self).save(*args, **kwargs)
-        transaction.on_commit(lambda: send_notify_message(self.warningId))
+        
+        if (not last_notified) or self.modifiedDate > last_notified:
+            print("Sending notification(s) for warning id {}".format(self.warningId))
+            transaction.on_commit(lambda: send_notify_message(self.warningId))
+        else:
+            print("Skipping  notification {} - appears to be a repeat".format(self.warningId))   
     
     def get_absolute_url(self):
         return reverse('warning:warning_detail',

@@ -38,14 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     # our apps
     'weather.apps.WeatherConfig',
     'blog.apps.BlogConfig',
     'forecast.apps.ForecastConfig',
     'chart.apps.ChartConfig',
     'warning.apps.WarningConfig',
-    #'alert.apps.AlertConfig', # moved to warning app
-    # extras
     'django_filters',
     'django_tables2',
     'easy_thumbnails',
@@ -85,6 +84,12 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 WSGI_APPLICATION = 'curbargap.wsgi.application'
 

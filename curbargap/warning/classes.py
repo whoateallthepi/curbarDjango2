@@ -254,22 +254,12 @@ class Notification(SMS_message):
             
             return entry
         
-        # Check if this warning has already been notified since / at the same time as the last update
-        # This is to reduce the number of repeat notifications from the gateway. It appears that warnings are
-        # re-presented at the NSWWS gateway when there has been no actual change in the data.
-        # 
-        if self.warning.notifiedDate: 
-            if self.warning.modifiedDate <= self.warning.notifiedDate:
-                print("skipping  notification {} - appears to be a repeat".format(self.warning_id))
-                return
-            
         # OK we are potentially alerting this if it affects any of the subscribed locations
-        # Note modifiedDate is initially set to issuedate 
         # 
         # update the notifiedDate
         #
-        self.warning.notifiedDate = self.warning.modifiedDate
-        self.warning.save(update_fields=['notifiedDate'])
+        #self.warning.notifiedDate = self.warning.modifiedDate
+        #self.warning.save(update_fields=['notifiedDate'])
         
         # Generate a list of dictionaries of all the messages to be sent
         #
