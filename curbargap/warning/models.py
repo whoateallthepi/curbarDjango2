@@ -132,6 +132,7 @@ class Warning(models.Model):
         return reverse('warning:warning_detail',
                        args=[str(self.warningId)] )
     
+    
     def __str__(self):
         return str(self.warningId)
     
