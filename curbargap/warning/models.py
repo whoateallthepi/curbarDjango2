@@ -122,6 +122,10 @@ class Warning(models.Model):
         print("saving warning...")
         super(Warning, self).save(*args, **kwargs)
         
+        if self.warningStatus != 1:
+            print("Skipping  notification {} has status {}".format(self.warningId, self.warningStatus))
+            return   
+
         if (not last_notified) or self.modifiedDate > last_notified:
             print("Sending notification(s) for warning id {}".format(self.warningId))
             transaction.on_commit(lambda: send_notify_message(self.warningId))
@@ -131,7 +135,6 @@ class Warning(models.Model):
     def get_absolute_url(self):
         return reverse('warning:warning_detail',
                        args=[str(self.warningId)] )
-    
     
     def __str__(self):
         return str(self.warningId)
@@ -201,6 +204,9 @@ class Device (models.Model):
     type = models.IntegerField('device type', choices = DeviceType.choices)
     phoneNumber = PhoneNumberField()
 
+    class Meta:
+        unique_together = ('type', 'phoneNumber',)
+
     def __str__(self):
         return str(self.phoneNumber)
 
@@ -214,3 +220,6 @@ class Subscription (models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
     type = models.IntegerField('subscription type', choices = SubscriptionType.choices)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('device', 'type','location',)
