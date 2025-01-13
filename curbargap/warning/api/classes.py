@@ -65,7 +65,7 @@ class MessageHandler (object):
             for l in Location.objects.all():
                 areas += l.name.upper() + ' '
            
-            return("Avaliable areas are: {}".format(areas))
+            return("Avaliable areas are: {}. To subscribe to warnings for an area, reply SUBSCRIBE <area>.".format(areas))
         
         elif self.message.startswith("SUBSCRIPTIONS"):
             phone = PhoneNumber.from_string(self.number)
