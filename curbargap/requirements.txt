@@ -10,7 +10,9 @@ Django==5.0.2
 django-filter==23.5
 django-geojson==4.0.0
 django-leaflet==0.29.0
+django-phonenumber-field==8.0.0
 django-tables2==2.7.0
+djangorestframework==3.15.2
 easy-thumbnails==2.8.5
 eumdac==2.2.1
 feedparser==6.0.11
@@ -21,8 +23,12 @@ jplephem==2.21
 lxml==5.1.0
 Markdown==3.5.2
 numpy==1.26.4
+pandas==2.2.1
+phonenumberslite==8.13.50
 pillow==10.2.0
 psycopg2==2.9.9
+pyshorteners==1.0.1
+python-dateutil==2.9.0.post0
 pytz==2024.1
 PyYAML==6.0.1
 reportlab==4.1.0
@@ -30,12 +36,14 @@ requests==2.31.0
 setuptools==69.1.0
 sgmllib3k==1.0.0
 sgp4==2.23
+six==1.16.0
 skyfield==1.48
 soupsieve==2.5
 sqlparse==0.4.4
 svglib==1.5.1
 tinycss2==1.2.1
 typing_extensions==4.9.0
+tzdata==2024.1
 urllib3==1.26.18
 webencodings==0.5.1
 zipp==3.17.0

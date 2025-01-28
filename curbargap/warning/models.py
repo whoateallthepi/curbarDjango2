@@ -9,6 +9,9 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.db import transaction
 from django.conf import settings
 
+from django.db.models import DEFERRED
+
+from django.utils import timezone
     
 import json
 
@@ -26,6 +29,28 @@ class Service(models.Model):
 #
 
 class Warning(models.Model):
+    
+    # following saves previous values when updating
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        # Default implementation of from_db() (subject to change and could
+        # be replaced with super()).
+        if len(values) != len(cls._meta.concrete_fields):
+            values = list(values)
+            values.reverse()
+            values = [
+                values.pop() if f.attname in field_names else DEFERRED
+                for f in cls._meta.concrete_fields
+            ]
+        instance = cls(*values)
+        instance._state.adding = False
+        instance._state.db = db
+        # customization to store the original field values on the instance
+        instance._loaded_values = dict(
+            zip(field_names, (value for value in values if value is not DEFERRED))
+        )
+        return instance
+    
     
     def display_weatherType (self):
         if self.weatherType == 0:
@@ -103,34 +128,48 @@ class Warning(models.Model):
                                          choices=Impact.choices) 
     geometry = models.MultiPolygonField('Geometry',blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-
+        
+    def save(self, **kwargs):
+        #
         from warning.classes import Notification # avoid circular import...
         def send_notify_message(warning_id):
             nn = Notification(warning_id,settings.SMS_SERVER,settings.SMS_PORT)
             nn.send()
         
-        # do some clever stuff
-        
-        print(" warning id {} modified date: {}, notified date: {}, issued date {}, ID {}, status {}".format(self.warningId, self.modifiedDate, self.issuedDate, self.notifiedDate, self.warningId,self.warningStatus))
-        
-        last_notified = self.notifiedDate
-        
-        # assume we will notify if necessary
-        self.notifiedDate = self.modifiedDate
-        
-        print("saving warning...")
-        super(Warning, self).save(*args, **kwargs)
-        
-        if self.warningStatus != 1:
-            print("Skipping  notification {} has status {}".format(self.warningId, self.warningStatus))
-            return   
+        # Check how the current values differ from ._loaded_values. 
+        #
+        if not self._state.adding:
+            # preserve the notified date on updates to avoid duplciates
+            #            
+            self.notifiedDate = self._loaded_values['notifiedDate']
 
-        if (not last_notified) or self.modifiedDate > last_notified:
+            print ('Warning update detected - preserving notified date = {}for warningId {}'.
+                   format(self.notifiedDate, self.warningId))
+        # logic not quite rigth .....
+        super().save(**kwargs)
+        
+        # save notified date
+        self._original_notifiedDate = self.notifiedDate
+
+        # decide if we are going to notify, ie never been notified or
+        # modified since lat notification
+        notify = False
+        if  (not self._original_notifiedDate) or ((
+            self.warningStatus == Warning.Status.ISSUED) and (
+            self._original_notifiedDate < self.modifiedDate)):
+            notify = True
+            # notification will happen so update notifiedDate
+            self.notifiedDate = timezone.now()
+
+        print("saving warning...")
+        super(Warning, self).save(**kwargs)
+        
+        if notify:
             print("Sending notification(s) for warning id {}".format(self.warningId))
             transaction.on_commit(lambda: send_notify_message(self.warningId))
-        else:
-            print("Skipping  notification {} - appears to be a repeat".format(self.warningId))   
+        else: 
+            print("Skipping  notification {}, status : {} - appears to be a repeat".
+                  format(self.warningId, self.warningStatus))   
     
     def get_absolute_url(self):
         return reverse('warning:warning_detail',

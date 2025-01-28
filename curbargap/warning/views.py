@@ -170,6 +170,14 @@ class FetchWarnings(View):
                 warningImpact = update['warningImpact'],
                 geometry = json.dumps(update['geometry']),
                 )
+            # Need to check if this is an update or a new warning
+            # Warnings can be sent more than once from the NSWWS with
+            # no change in the modifiedDate - not entirely sure why.
+            # To pick these out the notifiedDate needs to be preserved from 
+            # the original warning (if there is one). This means we don't notify, unless
+            #  modifiedDate is after notifiedDate.
+            
+            
             #breakpoint()
             if warning.warningStatus == 3:
                 print("**** unrecognised warningStatus")

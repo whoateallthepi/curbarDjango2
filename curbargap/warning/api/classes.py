@@ -12,6 +12,14 @@ class MessageHandler (object):
         except:
             raise ValueError("Usage: MessageHandler({'number': 447806xxxx , 'message': 'Help'}")
 
+    def _pretty_list(self, list, sep = ', ', last_sep = ' and '):
+        if len(list) == 1:
+            return list[0]
+        if last_sep is None:
+            return sep.join(list)
+        else:
+            return sep.join(list[:-1]) + last_sep + list[-1]
+
     def reply (self):
         # hardcoded messages for now....
         # 
@@ -19,7 +27,7 @@ class MessageHandler (object):
         if self.message.startswith("HELP") | self.message.startswith("INFO") :
             return ("curbargap.info weather warning service (BETA testing). "
                     "Reply SUBSCRIBE <area> to subscribe, "
-                    "AREAS for available <area>(s), "
+                    "AREAS for available areas, "
                     "SUBSCRIPTIONS to see your subscriptions, "
                     "STOP to stop messages."
                     )
@@ -61,11 +69,12 @@ class MessageHandler (object):
         
         elif self.message.startswith("AREAS"):
             
-            areas = ""
+            areas = []
             for l in Location.objects.all():
-                areas += l.name.upper() + ' '
+                areas.append(l.name.upper())
+            a = self._pretty_list(areas)    
            
-            return("Avaliable areas are: {}. To subscribe to warnings for an area, reply SUBSCRIBE <area>.".format(areas))
+            return("Avaliable areas are: {}. To subscribe to warnings for an area, reply SUBSCRIBE <area>.".format(a))
         
         elif self.message.startswith("SUBSCRIPTIONS"):
             phone = PhoneNumber.from_string(self.number)
@@ -74,11 +83,11 @@ class MessageHandler (object):
             except Device.DoesNotExist:
                 return ("Your device is not registered with us. For help, text: HELP")
             
-            areas = ""
+            areas = []
             for s in Subscription.objects.all().filter(device=device):
-                areas += s.location.name.upper() + ' '
+                areas.append(s.location.name.upper())
 
-            return ("You are receiving warning for areas {}.".format(areas))    
+            return ("You are receiving warnings for area(s): {}.".format(self._pretty_list(areas)))    
         else:
             return("Unrecognised message. For help reply: HELP")
         

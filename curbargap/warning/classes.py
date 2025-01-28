@@ -6,6 +6,8 @@ from django.utils.dateparse import parse_datetime
 
 from phonenumber_field.phonenumber import PhoneNumber
 
+import pyshorteners
+
 from django.conf import settings
 
 from warning.models import Warning, Service, Location, Subscription, Device
@@ -99,7 +101,7 @@ class Nswws(object):
                  
             return updates # a list of dictionaries        
         #
-        # This is the more common processin where we just get the updates
+        # This is the more common processing where we just get the updates
         # since last check. The URLs for the warnings have been stored at 
         # the check stage
         #        
@@ -245,8 +247,8 @@ class Notification(SMS_message):
             entry['from'] = warning.validFromDate
             entry['to'] = warning.validToDate
             entry['status'] = warning.warningStatus
-            #entry['url'] = settings.SITE_URL + warning.get_absolute_url()
-            entry['url'] = settings.SITE_URL + "/warning/warning/"
+            entry['url'] = tiny.tinyurl.short(settings.SITE_URL + warning.get_absolute_url())
+            #entry['url'] = settings.SITE_URL + "/warning/warning/"
             # extra info
             entry['issued'] = warning.issuedDate
             entry['modified'] = warning.modifiedDate
@@ -254,13 +256,9 @@ class Notification(SMS_message):
             
             return entry
         
+        tiny = pyshorteners.Shortener() # used in closure send
+
         # OK we are potentially alerting this if it affects any of the subscribed locations
-        # 
-        # update the notifiedDate
-        #
-        #self.warning.notifiedDate = self.warning.modifiedDate
-        #self.warning.save(update_fields=['notifiedDate'])
-        
         # Generate a list of dictionaries of all the messages to be sent
         #
         send_list = []
@@ -292,7 +290,7 @@ class Notification(SMS_message):
         for tsb in touching_subs:
             entry = create_entry(self.warning, tsb, False)
             notify_list.append(entry)
-        
+
         if debug: 
             print("message list")
             print("************")
