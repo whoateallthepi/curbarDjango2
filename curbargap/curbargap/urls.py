@@ -29,10 +29,7 @@ urlpatterns = [
     path('chart/', include ('chart.urls', namespace='chart')),
     path('warning/', include('warning.urls',namespace='warning')),
     path('api/', include('warning.api.urls', namespace='api')),
-    path('w/<str:url_hash>', warning_views.redirect_view, name='redirect'), 
-
-
-
+    path(settings.SHORT_URL_PREFIX.lstrip('/') + '<str:url_hash>', warning_views.redirect_view, name='redirect'), 
 ]
 
 if settings.DEBUG:

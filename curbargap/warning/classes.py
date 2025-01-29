@@ -247,8 +247,7 @@ class Notification(SMS_message):
             entry['from'] = warning.validFromDate
             entry['to'] = warning.validToDate
             entry['status'] = warning.warningStatus
-            entry['url'] = settings.SITE_URL + '/w/' + warning.hash
-            #entry['url'] = settings.SITE_URL + "/warning/warning/"
+            entry['url'] = settings.SITE_URL + settings.SHORT_URL_PREFIX + warning.hash
             # extra info
             entry['issued'] = warning.issuedDate
             entry['modified'] = warning.modifiedDate

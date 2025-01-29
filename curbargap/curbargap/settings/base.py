@@ -189,3 +189,4 @@ USE_L10 = False
 
 # Short URLs used for Warnings at moment
 SHORT_URL_LENGTH = 10
+SHORT_URL_PREFIX = '/s/' 
