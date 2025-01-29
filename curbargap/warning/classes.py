@@ -255,8 +255,6 @@ class Notification(SMS_message):
             
             return entry
         
-        #tiny = pyshorteners.Shortener() # used in closure send
-
         # OK we are potentially alerting this if it affects any of the subscribed locations
         # Generate a list of dictionaries of all the messages to be sent
         #
