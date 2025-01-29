@@ -274,6 +274,7 @@ class Notification(SMS_message):
             entry = create_entry(self.warning, isb, True)
             notify_list.append(entry)
 
+
         # Next get a list of locations partly coverd by warning area. EG for
         # England, a warning might only be in place for West Midlands
         #    
