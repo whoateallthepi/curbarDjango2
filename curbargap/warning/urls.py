@@ -10,6 +10,9 @@ urlpatterns = [
     path('warning/',views.WarningListView.as_view(),name='warning_list'),
     path('warning/<pk>/',views.WarningDetailView.as_view(),name='warning_detail'),
     path('api/fetch/',views.FetchWarnings.as_view(),name='fetch_warnings'),
+    path('<str:url_hash>', views.redirect_view, name='redirect'),
+    
+
 
     #path('forecast/<int:pk>', views.ForecastDetailView.as_view(), name='forecast_detail'),
     #path('forecast/api/fetchforecast/<api_key>', views.FetchForecasts.as_view(), name = 'fetch_forecast'),

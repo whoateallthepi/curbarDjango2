@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from weather import views
+from warning import views as warning_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,7 +28,11 @@ urlpatterns = [
     path('forecast/', include ('forecast.urls', namespace='forecast')),
     path('chart/', include ('chart.urls', namespace='chart')),
     path('warning/', include('warning.urls',namespace='warning')),
-    path('api/', include('warning.api.urls', namespace='api'))
+    path('api/', include('warning.api.urls', namespace='api')),
+    path('w/<str:url_hash>', warning_views.redirect_view, name='redirect'), 
+
+
+
 ]
 
 if settings.DEBUG:

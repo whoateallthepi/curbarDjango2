@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_datetime
 
 from phonenumber_field.phonenumber import PhoneNumber
 
-import pyshorteners
+#import pyshorteners
 
 from django.conf import settings
 
@@ -247,7 +247,7 @@ class Notification(SMS_message):
             entry['from'] = warning.validFromDate
             entry['to'] = warning.validToDate
             entry['status'] = warning.warningStatus
-            entry['url'] = tiny.tinyurl.short(settings.SITE_URL + warning.get_absolute_url())
+            entry['url'] = settings.SITE_URL + '/w/' + warning.hash
             #entry['url'] = settings.SITE_URL + "/warning/warning/"
             # extra info
             entry['issued'] = warning.issuedDate
@@ -256,7 +256,7 @@ class Notification(SMS_message):
             
             return entry
         
-        tiny = pyshorteners.Shortener() # used in closure send
+        #tiny = pyshorteners.Shortener() # used in closure send
 
         # OK we are potentially alerting this if it affects any of the subscribed locations
         # Generate a list of dictionaries of all the messages to be sent

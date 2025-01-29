@@ -14,6 +14,8 @@ from django.db.models import DEFERRED
 from django.utils import timezone
     
 import json
+import random
+import string
 
 # Create your models here.
 class Service(models.Model):
@@ -107,6 +109,7 @@ class Warning(models.Model):
         OTHER = 3, 'unknown'    
     
     warningId = models.UUIDField('Warning ID',primary_key=True)
+    hash = models.CharField(max_length=settings.SHORT_URL_LENGTH, blank=True, null=True,unique=True)
     service =  models.ForeignKey(Service,on_delete=models.CASCADE)
     issuedDate = models.DateTimeField('Warning Time')
     notifiedDate = models.DateTimeField('Notified Time', blank=True, null=True)
@@ -139,20 +142,29 @@ class Warning(models.Model):
         # Check how the current values differ from ._loaded_values. 
         #
         if not self._state.adding:
-            # preserve the notified date on updates to avoid duplciates
-            #            
+            # preserve the hash if it is there
+            self.hash = self._loaded_values['hash']
+            
+            # preserve the notified date on updates to avoid duplciate notifications
             self.notifiedDate = self._loaded_values['notifiedDate']
 
             print ('Warning update detected - preserving notified date = {}for warningId {}'.
                    format(self.notifiedDate, self.warningId))
-        # logic not quite rigth .....
-        super().save(**kwargs)
+        
+        if not self.hash:
+            self.hash = ''.join(random.choice(string.ascii_uppercase + 
+                                              string.ascii_lowercase + 
+                                              string.digits) 
+                                              for _ in range(settings.SHORT_URL_LENGTH))
+        
+        # probs need to check for duplicates...
+        
         
         # save notified date
         self._original_notifiedDate = self.notifiedDate
 
         # decide if we are going to notify, ie never been notified or
-        # modified since lat notification
+        # modified since last notification
         notify = False
         if  (not self._original_notifiedDate) or ((
             self.warningStatus == Warning.Status.ISSUED) and (

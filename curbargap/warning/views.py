@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, TemplateView, FormView, View
 #from django.views.generic.edit import UpdateView
+from django.shortcuts import redirect
 from django.contrib.gis.geos import Point
 from .forms import MapForm
 from .models import Warning
@@ -15,6 +16,8 @@ from warning.classes import Nswws
 import json
 
 # Create your views here.
+
+
 
 class ServiceListView(ListView):
     model = Service
@@ -221,7 +224,11 @@ class FetchWarnings(View):
         else:
             message = 'API match - Nswws contacted - no updates'
         
-        return render (request, self.template_name, {'message': message })        
+        return render (request, self.template_name, {'message': message })     
+
+def redirect_view(request, url_hash):
+    w = Warning.objects.get(hash=url_hash)
+    return redirect(w.get_absolute_url())       
         
 
 

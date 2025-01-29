@@ -186,3 +186,6 @@ DEFAULT_WARNING_SERVICE = 1
 # Dates
 SHORT_DATE_FORMAT = "d/m/Y"
 USE_L10 = False
+
+# Short URLs used for Warnings at moment
+SHORT_URL_LENGTH = 10
