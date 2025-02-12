@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from .models import Reading, Station
 
 class SearchReadingForm(forms.ModelForm):
@@ -7,7 +8,7 @@ class SearchReadingForm(forms.ModelForm):
         fields = ('station', 'date_from', 'date_to')
     
     station = forms.ModelChoiceField(queryset=Station.objects.all(), 
-                                     empty_label=None, initial=3)    
+                                     empty_label=None, initial=settings.DEFAULT_STATION)    
 
     #station = forms.IntegerField()
     date_from = forms.DateField()

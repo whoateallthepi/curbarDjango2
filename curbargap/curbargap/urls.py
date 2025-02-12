@@ -29,6 +29,8 @@ urlpatterns = [
     path('chart/', include ('chart.urls', namespace='chart')),
     path('warning/', include('warning.urls',namespace='warning')),
     path('api/', include('warning.api.urls', namespace='api')),
+    path('api/', include('weather.api.urls', namespace='wapi')),
+    
     path(settings.SHORT_URL_PREFIX.lstrip('/') + '<str:url_hash>', warning_views.redirect_view, name='redirect'), 
 ]
 
