@@ -2,8 +2,8 @@ from django import template
 from ..models import Reading
 from ..models import AstronomicalData, Station
 from blog.models import Post
-from datetime import datetime
-from django.utils import timezone
+from datetime import datetime, timezone
+#from django.utils import timezone
 
 
 from django.conf import settings
@@ -26,7 +26,7 @@ def temperature_now (station=settings.DEFAULT_STATION):
 @register.inclusion_tag('weather/astronomicaldata/today.html')
 def show_todays_astrodata(station=settings.DEFAULT_STATION):
     
-    today = datetime.utcnow().date()
+    today = datetime.now(timezone.utc).date()
 
     ss = Station.objects.get(pk=settings.DEFAULT_STATION)
     

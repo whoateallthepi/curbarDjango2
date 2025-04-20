@@ -166,9 +166,14 @@ THUMBNAIL_ALIASES = {
 # The following are for the Met Office Datahub API calls
 LEGACY_DATAHUB_URL = "api-metoffice.apiconnect.ibmcloud.com"
 DATAHUB_URL = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/"
+
+# Note Datapoint to go in September 2025
 DATAPOINT_URL = "datapoint.metoffice.gov.uk"
 CHARTS_URL = "/public/data/image/wxfcs/surfacepressure/json/capabilities?key={datapoint_key}"
 SATELLITES_URL = "/public/data/layer/wxobs/all/json/capabilities?key={datapoint_key}"
+REGIONAL_FORECAST_URL = "/public/data/txt/wxfcs/regionalforecast/json/{region_id}?key={datapoint_key}"
+REGION_LIST_URL = "/public/data/txt/wxfcs/regionalforecast/json/sitelist?key={datapoint_key}"
+DEFAULT_REGION = 511
 
 # the following are for Met Office NSWWS API calls (weather warnings)
 

@@ -11,7 +11,10 @@ from .tables import TimestepTable
 
 from django.conf import settings
 
-import datapoint
+#import datapoint
+import http.client
+import json
+import pytz
 
 from collections import namedtuple
 
@@ -54,7 +57,7 @@ def reading_search (request):
             result = {**rain_1h, **humidity, **temperature, **wind_speed, **rain_total,
                       **bar }
             
-    #breakpoint()                    
+    #breakpoint()    tzinfo=ZoneInfo("UTC")               
     return render(request,
                   'weather/reading/totals.html',
                   {'form': form,
@@ -111,52 +114,108 @@ def get_forecast (request, station_id):
                    }
                    )
 
-
 def regional_forecast_view(request, region_id):
     #
     # To do - add some error checking...
     #
-    conn = datapoint.Manager(api_key=settings.DATAPOINT_API)    
-    regions = conn.regions.get_all_regions()
-    region_name = ''
-    #maybe a better way of searching...
-    for region in regions:
-        if region.location_id == str(region_id):
-            region_name = region.name
-            break
-    
-    Forecast_section = namedtuple('Forecast_section', 'head text')
-    forecast_sections = []
+    # datapoint is being withdrawn so sticking this in a procedure 
+    # to aid replacement
+    def datapoint_regional_forecast(region_id):
+        def get_region_name (short_code):
+            match short_code:
+                case "os":
+                    return 'Orkney and Shetland'
+                case "he":
+                    return "Highland and Eilean Siar"
+                case "gr":
+                    return "Grampian"
+                case "ta":
+                    return "Tayside"
+                case "st":
+                    return "Strathclyde"
+                case "dg":
+                    return "Dumfries, Galloway, Lothian"
+                case "ni": 
+                    return "Northern Ireland"
+                case "yh":
+                    return "Yorkshire and the Humber"
+                case "ne":
+                    return "Northeast England"
+                case "em":
+                    return "East Midlands"
+                case "ee" :
+                    return "East of England"
+                case "se":
+                    return "London and Southeast England"
+                case "nw":
+                    return "Northwest England"
+                case "wm":
+                    return "West Midlands"
+                case "sw": 
+                    return "Southwest England"
+                case "wl":
+                    return "Wales"
+                case _:
+                    return short_code + " - unknown"
+        
+        website = settings.DATAPOINT_URL
+        API_key = settings.DATAPOINT_API
+        conn = http.client.HTTPConnection(website)
+        
+        # Get all the regions - need this for the region name
+        url = settings.REGION_LIST_URL
 
-    forecast = conn.regions.get_raw_forecast(region_id) ['RegionalFcst']
-    # Issued date is a string with 'T' delimiting time
-    issued_str = forecast['issuedAt']
-    fd,ft = issued_str.split('T')
-    issued = datetime.strptime((fd + ' ' +ft), '%Y-%m-%d %H:%M:%S')
+        conn.request("GET", url.format(datapoint_key=API_key))
+        response = conn.getresponse()
+        data = response.read()
+
+        json_data = json.loads(data)
+        
+
+        url = settings.REGIONAL_FORECAST_URL
+        conn.request ("GET", url.format(datapoint_key=API_key, region_id=region_id))
+        response = conn.getresponse()
+        data = response.read()
+
+        json_data = json.loads(data)
+        
+        forecast = json_data['RegionalFcst']
+        
+        issued_str = forecast['issuedAt']
+
+        fd,ft = issued_str.split('T')
+        issued = datetime.strptime((fd + ' ' +ft), '%Y-%m-%d %H:%M:%S')
      
-    sections = forecast['FcstPeriods']['Period']
-    #breakpoint()
-    for section in forecast ['FcstPeriods'] ['Period']:
-        paragraph = []
-        content = section['Paragraph']
-        # deal with paragraphs containing multiple sections
-        if isinstance(content, dict):
-            paragraph.append(content)
-        else:
-            paragraph = content   
+        region_name = get_region_name(forecast['regionId'])
         
-        #breakpoint()
+        sections = forecast ['FcstPeriods'] ['Period']
+
+        Forecast_section = namedtuple('Forecast_section', 'head text')
+        forecast_sections = []
+
+
+        for ss in sections:
+            paragraph = []
+            content = ss['Paragraph']
+            # deal with paragraphs containing multiple sections
+            if isinstance(content, dict):
+                paragraph.append(content)
+            else:
+                paragraph = content   
         
-        for line in paragraph: 
             #breakpoint()
+        
+            for line in paragraph: 
+                fs = Forecast_section (line['title'], line['$'])
+                forecast_sections.append(fs) 
 
-            fs = Forecast_section (line['title'], line['$'])
-            forecast_sections.append(fs) 
+                #text = text + ('{}\n{}\n'.format(line['title'], line['$']))
+            #breakpoint()
+        
+        return forecast_sections, region_name, issued
 
-            #text = text + ('{}\n{}\n'.format(line['title'], line['$']))
-             
+    forecast_sections, region_name, issued = datapoint_regional_forecast(region_id)
     
-    #breakpoint()
     
     return render (request,
                    'weather/forecast/full.html',

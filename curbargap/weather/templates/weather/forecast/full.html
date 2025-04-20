@@ -5,7 +5,7 @@
 {% block content %}
   {#  #}
   <h1> Forecast for {{ region }} region</h1>
-  <p class='small'> Issued: {{ issued|date:"D M d H:i A" }} </p>
+  <p class='small'> Issued: {{ issued|date:"g:iA"}} GMT on {{ issued|date:"D, d M, Y"}}</p> 
   {% for section in forecast %}
   
   <h5> {{ section.head }} </h5>
