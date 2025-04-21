@@ -7,8 +7,11 @@
   <h1> Forecast for {{ region }} region</h1>
   <p class='small'> Issued: {{ issued|date:"g:iA"}} GMT on {{ issued|date:"D, d M, Y"}}</p> 
   {% for section in forecast %}
-  
-  <h5> {{ section.head }} </h5>
-  <p>  {{ section.text }} </p>
+  {% if forloop.first %}
+    <h2>{{ section.text }}</h2>
+  {% else %}   
+    <h5> {{ section.head }} </h5>
+    <p>  {{ section.text }} </p>
+  {% endif %}
   {% endfor %}
 {% endblock %}
