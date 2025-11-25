@@ -16,13 +16,16 @@ class ChartRun(models.Model):
 
 class Chart(models.Model):
     BW_SURFACE = 1
+    COLOUR_SURFACE = 2
     TYPES_OF_CHART = [
-        (BW_SURFACE, 'black and white - surface pressure')
+        (BW_SURFACE, 'black and white - surface pressure'),
+        (COLOUR_SURFACE, 'colour - surface pressure')
     ]
+    
     type = models.IntegerField('type', choices = TYPES_OF_CHART, default = BW_SURFACE)
     run = models.ForeignKey(ChartRun,on_delete=models.CASCADE, default=0)
-    valid_from = models.DateTimeField('valid from') 
-    valid_to = models.DateTimeField('valid to')
+    valid_from = models.DateTimeField('valid from', null=True, blank=True) 
+    valid_to = models.DateTimeField('valid to', null=True, blank=True)
     image_url = models.URLField('Met office URL', max_length=200)
     image_file = models.ImageField(upload_to='charts/%Y/%m/%d/', blank=True)
     forecast_time = models.DateTimeField('date')

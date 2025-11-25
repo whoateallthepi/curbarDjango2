@@ -12,7 +12,8 @@ from django.views.generic import ListView, DetailView, TemplateView, View
 
 from chart.models import Chart, ChartRun, SatelliteImage
 from django.conf import settings
-from chart.classes import DataPoint
+#from chart.classes import DataPoint
+from chart.classes import MetOfficeWeb
 from chart.classes import EUMetsat
 
 from chart.forms import ChartSearchForm, SatelliteSearchForm
@@ -99,9 +100,13 @@ class FetchCharts(View):
         
         if api_key == settings.FORECAST_KEY:
             #create the Met Office DataHub connection 
-            dp = DataPoint()
-            dp.fetch_charts() 
-            dp.close() 
+            #dp = DataPoint()
+            #dp.fetch_charts() 
+            #dp.close()
+            # 
+            #  
+            web = MetOfficeWeb()
+            web.fetch_charts()
             message = 'API matched - DataPoint contacted'
         else:
             message = 'API key failure'    

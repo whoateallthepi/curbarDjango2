@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import connection
 from django.utils import dateparse
+from dateparser import parse # more flexible parsing that django utils
 from .models import Chart, ChartRun, SatelliteImage
 from datetime import datetime, timedelta
 
@@ -15,6 +16,9 @@ import fnmatch # all these for file download only
 import io
 import shutil
 from tempfile import NamedTemporaryFile
+
+import requests
+from lxml.html import tostring, fromstring
 
 class EUMetsat(object):
     
@@ -98,6 +102,63 @@ class EUMetsat(object):
                print("Customisation Error:", error)
            except Exception as error:
                print("Unexpected error:", error)
+
+class MetOfficeWeb(object):
+# DataPoint is being withdrawn so adding in a new class to 
+# screen scrape from Met Office website where equivalen info is unavailable from 
+# from the replacement DataHub.
+# Initially we are getting synoptic charts and text forecasts.
+#
+    def __init__(self, charts_URL = None):
+        if charts_URL is None:
+            self.charts_URL = settings.CHARTS_URL
+        else:
+            self.charts_URL = charts_URL    
+
+    def fetch_charts(self):
+        
+        response = requests.get(self.charts_URL)
+
+        if response.status_code != 200:
+            return ConnectionError ("Failed to connect to URL %s", self.charts_URL)
+        
+        page = fromstring(response.text)
+
+        ulist =  page.get_element_by_id('colourCharts')
+
+        charts = [] # will be a list of tuples (date,url)
+
+        for uu in ulist:
+            link = tostring(uu).decode('utf-8')
+            dd = (link[(link.find('data-value=') + 12)::])
+            ds = dd.split('"') # creates a list - zero element  is date, index 2 element is url
+            charts.append((parse(ds[0]), ds[2]))
+                 
+        chart_run_date, _ = charts[0] # the datetime of the first chart is always the origin time of the
+                                     # set of charts
+    
+        # have we processed this set of charts?
+        chart_run_check = ChartRun.objects.filter(date = chart_run_date)
+       
+        if chart_run_check:
+            # have already processed this run - exit
+            return
+        
+        chart_run = ChartRun(date=chart_run_date) 
+
+        chart_run.save()
+       
+        for ch in charts:
+            chart_time, chart_uri = ch
+            chart = Chart(run=chart_run,
+                        type = Chart.COLOUR_SURFACE,
+                        #valid_from = chart_run_date,
+                        #valid_to = chart_time,
+                        image_url = chart_uri,
+                        forecast_time = chart_time )
+            #breakpoint()
+            chart.save() 
+                
 
 class DataPoint(object):
     
