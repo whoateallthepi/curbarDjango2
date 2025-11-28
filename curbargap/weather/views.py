@@ -11,6 +11,12 @@ from .tables import TimestepTable
 
 from django.conf import settings
 
+import requests as web_requests
+from lxml.html import tostring, fromstring
+
+from dateparser import parse # more flexible parsing that django utils
+
+
 #import datapoint
 import http.client
 import json
@@ -116,6 +122,62 @@ def get_forecast (request, station_id):
 
 def regional_forecast_view(request, region_id):
     #
+    # new procedure for scraping the regional forecast text
+    #
+    def webscrape_regional_forecast(region_url, national_url):
+        #breakpoint()
+        webpage = web_requests.get(region_url)
+        #breakpoint()
+
+        if webpage.status_code != 200:
+            return ConnectionError ("Failed to connect to URL %s", region_url)
+        
+        national_webpage = web_requests.get(national_url)
+        #breakpoint()
+
+        if national_webpage.status_code != 200:
+            return ConnectionError ("Failed to connect to URL %s", national_url)
+        
+        # Start with the regional forecast
+        
+        page = fromstring(webpage.text)
+
+        flist =  page.get_element_by_id('forecast-text')
+        #breakpoint()
+        big_head = flist.findall('.//h2')[0].text
+        region_name = big_head[:big_head.index(" weather")]
+
+        pars = flist.findall('.//p')
+        heads = flist.findall('.//h4')
+        
+        # drag out the date of the forecast
+        times = flist.findall('.//time')
+        issued = parse(times[0].text)
+
+        # Construct the forecast page 
+        Forecast_section = namedtuple('Forecast_section', 'head text')
+        forecast_sections = []
+
+        for h, p in zip(heads, pars):
+            
+            fs = Forecast_section(h.text, p.text)
+            forecast_sections.append(fs) 
+
+        # so far we have the regional forecast. Further ahead we need the national 
+        # long range
+        page = fromstring(national_webpage.text)
+
+        pars = page.findall('.//p')
+        heads = page.findall('.//h3')
+
+        for h, p, _ in zip(heads, pars, (0,1)): # just use first two elements
+            
+            fs = Forecast_section('UK outlook for ' + h.text, p.text)
+            forecast_sections.append(fs) 
+
+        return forecast_sections, region_name, issued
+
+    #
     # To do - add some error checking...
     #
     # datapoint is being withdrawn so sticking this in a procedure 
@@ -213,10 +275,14 @@ def regional_forecast_view(request, region_id):
             #breakpoint()
         
         return forecast_sections, region_name, issued
+        
+    # obsolete code for Datapoint
+    #forecast_sections, region_name, issued = datapoint_regional_forecast(region_id)
 
-    forecast_sections, region_name, issued = datapoint_regional_forecast(region_id)
-    
-    
+    # new code for webscraping the text forecast
+    # forecast_sections, region_name, issued = webscrape_regional_forecast(settings.REGIONAL_FORECAST_URL)
+    forecast_sections, region_name, issued = webscrape_regional_forecast(settings.TEXT_FORECAST_URL, settings.LONG_RANGE_FORECAST_URL)
+
     return render (request,
                    'weather/forecast/full.html',
                    {'forecast' : forecast_sections,
