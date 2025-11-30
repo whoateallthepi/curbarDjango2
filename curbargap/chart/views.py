@@ -33,13 +33,13 @@ class ChartDetailView(DetailView):
     queryset = Chart.objects.all()
     template_name = 'chart/chart/detail.html'
 
-
 class ChartLatestSetView(View):
     template_name = 'chart/chart/run.html' 
     def get(self, request, *args, **kwargs):
-        date = self.request.GET.get('date') or 'latest'
+        date = kwargs['date'] or 'latest'
+        type = kwargs['type'] or Chart.BW_SURFACE
         
-         # get latest ChartRun (or latest one for date)
+        # get latest ChartRun (or latest one for date)
 
         if date.lower() == 'latest':
             cr = ChartRun.objects.latest('date')
@@ -55,9 +55,9 @@ class ChartLatestSetView(View):
                     # create an empty queryset and return
                     charts = Chart.objects.none()
                     return render(request, self.template_name, {'charts': charts,} )
-                         
-        charts = cr.chart_set.all().order_by('forecast_time') #' no need to limit - usually only handful per day
-        #breakpoint()
+
+        charts = cr.chart_set.all().filter(type=type).order_by('forecast_time') #' no need to limit - usually only handful per day
+
         return render(request, self.template_name, {'charts': charts,
                                                     'run_date': cr.date })
 
@@ -149,7 +149,7 @@ class ChartSearchFormView(FormView):
 
     def form_valid(self,form):
         #breakpoint()
-        redirect_url = "/chart/chart/run/?date=" + form.cleaned_data['date'].strftime('%Y-%m-%d')
+        redirect_url = "/chart/chart/run/" + form.cleaned_data['type'] + "/" + form.cleaned_data['date'].strftime('%Y-%m-%d')
         return  HttpResponseRedirect(redirect_url)
         #return super().form_valid(form)
         

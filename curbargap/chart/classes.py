@@ -144,6 +144,8 @@ class MetOfficeWeb(object):
             # have already processed this run - exit
             return
         
+        # First do the colour charts 
+
         chart_run = ChartRun(date=chart_run_date) 
 
         chart_run.save()
@@ -158,7 +160,30 @@ class MetOfficeWeb(object):
                         forecast_time = chart_time )
             #breakpoint()
             chart.save() 
-                
+
+        # BW chars are essentially the same - no need to save a chart run though
+        # could de-duplicate this code....
+        #     
+        ulist =  page.get_element_by_id('bwCharts')
+
+        charts = [] # will be a list of tuples (date,url)
+
+        for uu in ulist:
+            link = tostring(uu).decode('utf-8')
+            dd = (link[(link.find('data-value=') + 12)::])
+            ds = dd.split('"') # creates a list - zero element  is date, index 2 element is url
+            charts.append((parse(ds[0]), ds[2]))
+                 
+        for ch in charts:
+            chart_time, chart_uri = ch
+            chart = Chart(run=chart_run,
+                        type = Chart.BW_SURFACE,
+                        #valid_from = chart_run_date,
+                        #valid_to = chart_time,
+                        image_url = chart_uri,
+                        forecast_time = chart_time )
+            #breakpoint()
+            chart.save() 
 
 class DataPoint(object):
     

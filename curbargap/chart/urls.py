@@ -7,7 +7,7 @@ urlpatterns = [
     # chart views
     path('',views.ChartListView.as_view(), name='chart_list'),
     path('chart/<int:pk>', views.ChartDetailView.as_view(), name='chart_detail'),
-    path('chart/run/', views.ChartLatestSetView.as_view(), name='chart_run'),
+    path('chart/run/<type>/<date>/', views.ChartLatestSetView.as_view(), name='chart_run'),
     path('chart/search/', views.ChartSearchFormView.as_view(), name ='chart_search'),
     path('chart/api/fetch/<api_key>', views.FetchCharts.as_view(), name = 'fetch_charts'),
     path('satelliteimage/list',views.SatelliteImageListView.as_view(), name= 'satelliteimagelist'),
