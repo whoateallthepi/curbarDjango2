@@ -43,7 +43,7 @@ class Nswws(object):
         # service = Service.objects.get(pk=self.service_id)
         
         if self.feed_updated <= last_check:
-            print('no new updates')
+            print('NSWWS - no new updates')
             return False
 
         if 'entries' not in p:
@@ -333,9 +333,11 @@ class Notification(SMS_message):
                                       n['url'] )
             
 
-            if n['status'] == 1: # only issued at the moment. Updates ot follow
+            if n['status'] == 1: # only issued at the moment. Updates to follow
                 numbers.append(n['device'].as_e164)
                 messages.append(out)
+            else:
+                print("Skipping message for warning {} - status = {}".format(self.warning_id), n['status'])    
             
             if debug: 
                 print("Status:{}".format(n['status']))

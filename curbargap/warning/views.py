@@ -11,7 +11,11 @@ from warning.models import Service, Warning
 
 from django.utils import timezone
 
+from django.db import transaction
+
 from warning.classes import Nswws
+
+from warning.classes import Notification
 
 import json
 
@@ -103,6 +107,7 @@ class FetchWarnings(View):
 
     # this is an internal procedure to update the database from the 
     # data fetched from Nswws 
+    
     def _store_updates(self, updates, service_id, feed_updated):
         def decodeWeatherType (weatherType):
             if weatherType == 'RAIN':
@@ -142,6 +147,10 @@ class FetchWarnings(View):
                 return 2
             
             return 3
+    
+        def send_notify_message(warning_id):
+            nn = Notification(warning_id,settings.SMS_SERVER,settings.SMS_PORT)
+            nn.send() 
 
         service = Service.objects.get(pk=service_id)
         for update in updates:
@@ -180,17 +189,47 @@ class FetchWarnings(View):
             # the original warning (if there is one). This means we don't notify, unless
             #  modifiedDate is after notifiedDate.
             
-            
-            #breakpoint()
-            if warning.warningStatus == 3:
-                print("**** unrecognised warningStatus")
-                print(update['warningStatus'])
+            try:
+                update_check = Warning.objects.get(pk=warning.warningId)
+            except Warning.DoesNotExist:
+                print ('New warning detected - warningId {}'.format(warning.warningId))
+                warning.save()
+                print("Sending notification(s) for warning id {}".format(warning.warningId))
+                transaction.on_commit(lambda: send_notify_message(warning.warningId))
+            else:
+                # We have already had this warning. Two possible situations:
+                # 1) Just a duplicate
+                # 2) An amendment
+                #     
+                if warning.value_equals(update_check):
+                    print(('Ignoring duplicate warning - warningId {}'.format(warning.warningId)))
+                else:
+                    print(('Amending warning - warningId {}'.format(update_check.warningId)))
+                    update_check.warningId = update['warningId']
+                    update_check.service = service
+                    update_check.issuedDate = update['issuedDate']
+                    update_check.weatherType = wt
+                    update_check. warningLikelihood = update['warningLikelihood']
+                    update_check.warningLevel = decodeLevel(update['warningLevel'])
+                    update_check.warningStatus = decodeStatus(update['warningStatus'])
+                    update_check.warningHeadline = update['warningHeadline']
+                    update_check.whatToExpect = wte
+                    update_check.modifiedDate = update['modifiedDate']
+                    update_check.validFromDate = update['validFromDate']
+                    update_check.validToDate = update['validToDate']
+                    update_check.affectedAreas = update['affectedAreas']
+                    update_check.warningImpact = update['warningImpact']
+                    update_check.geometry = json.dumps(update['geometry'])
+                    update_check.hash = warning.hash # copy hash from old record 
+                    
+                    # save the amended record and notify
 
-            warning.save()   
+                    print("Sending notification(s) for warning id {}".format(update_check.warningId))
+                    transaction.on_commit(lambda: send_notify_message(update_check.warningId))
         
         service.lastUpdate = feed_updated
         service.save()
-    
+
     def get(self, request, *args, **kwargs):
         force = self.request.GET.get('force', 'n')
         api_key = self.request.GET.get('api_key', '999')

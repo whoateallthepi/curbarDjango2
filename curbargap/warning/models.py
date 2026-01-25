@@ -33,8 +33,11 @@ class Service(models.Model):
 class Warning(models.Model):
     
     # following saves previous values when updating
-    @classmethod
-    def from_db(cls, db, field_names, values):
+    #
+    # Disabled the following code as it is not working as intended
+    #
+    #@classmethod
+    def from_db_redundant(cls, db, field_names, values):
         # Default implementation of from_db() (subject to change and could
         # be replaced with super()).
         if len(values) != len(cls._meta.concrete_fields):
@@ -134,22 +137,26 @@ class Warning(models.Model):
         
     def save(self, **kwargs):
         #
-        from warning.classes import Notification # avoid circular import...
-        def send_notify_message(warning_id):
-            nn = Notification(warning_id,settings.SMS_SERVER,settings.SMS_PORT)
-            nn.send()
+        #from warning.classes import Notification # avoid circular import...
+        #def send_notify_message(warning_id):
+        #    nn = Notification(warning_id,settings.SMS_SERVER,settings.SMS_PORT)
+        #    nn.send()
         
         # Check how the current values differ from ._loaded_values. 
         #
-        if not self._state.adding:
+        # Disbled this code as dev/d38 to rework duplicate notifications
+        #
+        #if not self._state.adding:
             # preserve the hash if it is there
-            self.hash = self._loaded_values['hash']
+        #    self.hash = self._loaded_values['hash']
             
             # preserve the notified date on updates to avoid duplciate notifications
-            self.notifiedDate = self._loaded_values['notifiedDate']
+        #    self.notifiedDate = self._loaded_values['notifiedDate']
 
-            print ('Warning update detected - preserving notified date = {}for warningId {}'.
-                   format(self.notifiedDate, self.warningId))
+        #    print ('Warning update detected - preserving notified date = {}for warningId {}'.
+        #          format(self.notifiedDate, self.warningId))
+        
+        # Hash is used for short URLs - generate one if not there
         
         if not self.hash:
             self.hash = ''.join(random.choice(string.ascii_uppercase + 
@@ -161,27 +168,27 @@ class Warning(models.Model):
         
         
         # save notified date
-        self._original_notifiedDate = self.notifiedDate
+        #self._original_notifiedDate = self.notifiedDate
 
         # decide if we are going to notify, ie never been notified or
         # modified since last notification
         notify = False
-        if  (not self._original_notifiedDate) or ((
-            self.warningStatus == Warning.Status.ISSUED) and (
-            self._original_notifiedDate < self.modifiedDate)):
-            notify = True
-            # notification will happen so update notifiedDate
-            self.notifiedDate = timezone.now()
+        #if  (not self._original_notifiedDate) or ((
+        #    self.warningStatus == Warning.Status.ISSUED) and (
+        #    self._original_notifiedDate < self.modifiedDate)):
+        #    notify = True
+        #    # notification will happen so update notifiedDate
+        #    self.notifiedDate = timezone.now()
 
         print("saving warning...")
         super(Warning, self).save(**kwargs)
         
-        if notify:
-            print("Sending notification(s) for warning id {}".format(self.warningId))
-            transaction.on_commit(lambda: send_notify_message(self.warningId))
-        else: 
-            print("Skipping  notification {}, status : {} - appears to be a repeat".
-                  format(self.warningId, self.warningStatus))   
+        #if notify:
+        #    print("Sending notification(s) for warning id {}".format(self.warningId))
+        #    transaction.on_commit(lambda: send_notify_message(self.warningId))
+        #else: 
+        #    print("Skipping  notification {}, status : {} - appears to be a repeat".
+        #          format(self.warningId, self.warningStatus))   
     
     def get_absolute_url(self):
         return reverse('warning:warning_detail',
@@ -235,6 +242,31 @@ class Warning(models.Model):
 
         return region_list
     
+    def value_equals(self, other):
+        # Helps decide if warning is a duplicate - compoares selected fields, notably not hash
+        #
+        if not isinstance(other, Warning):
+            return NotImplemented
+        
+                
+        return (other.warningId == self.warningId and
+                other.service == self.service and
+                other.issuedDate == self.issuedDate and
+                other.weatherType == self.weatherType and 
+                other.warningLikelihood == self.warningLikelihood and
+                other.warningLevel == self.warningLevel and
+                other.warningStatus == self.warningStatus and 
+                other.warningHeadline == self.warningHeadline and
+                other.whatToExpect == self.whatToExpect and
+                other.modifiedDate == self.modifiedDate and
+                other.validFromDate == self.validFromDate and
+                other.validToDate == self.validToDate and
+                other.affectedAreas == self.affectedAreas and
+                other.warningImpact == self.warningImpact and 
+                other.geometry == self.geometry 
+                ) 
+               
+        
 class Location (models.Model):
     name = models.CharField('location', max_length=50, unique=True, db_index=True)
     area = models.MultiPolygonField('geometry',blank=True, null=True)
