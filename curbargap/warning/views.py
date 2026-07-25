@@ -266,7 +266,12 @@ class FetchWarnings(View):
         return render (request, self.template_name, {'message': message })     
 
 def redirect_view(request, url_hash):
-    w = Warning.objects.get(hash=url_hash)
+    try:
+        w = Warning.objects.get(hash=url_hash)
+    except Warning.DoesNotExist:
+        print('Failed to find Warning hash: {}'.format(url_hash))
+        return(Warning.DoesNotExist)
+         
     return redirect(w.get_absolute_url())       
         
 
