@@ -107,7 +107,7 @@ class FetchCharts(View):
             #  
             web = MetOfficeWeb()
             web.fetch_charts()
-            message = 'API matched - DataPoint contacted'
+            message = 'API matched - Met Office website contacted'
         else:
             message = 'API key failure'    
         

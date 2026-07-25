@@ -3,7 +3,7 @@ from django.db import connection
 from django.utils import dateparse
 from dateparser import parse # more flexible parsing that django utils
 from .models import Chart, ChartRun, SatelliteImage
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from zoneinfo import ZoneInfo
 
@@ -132,11 +132,23 @@ class MetOfficeWeb(object):
             link = tostring(uu).decode('utf-8')
             dd = (link[(link.find('data-value=') + 12)::])
             ds = dd.split('"') # creates a list - zero element  is date, index 2 element is url
-            charts.append((parse(ds[0]), ds[2]))
-                 
+
+            # following line is a British Summer Time fudge as dateparser baulks at UTC+ timezones
+            this_date = ds[0] 
+            subtract_BST = 'UTC+1' in this_date
+            if subtract_BST:
+                this_date = this_date.replace('(UTC+1)','UTC') # otherwise this messes up parse
+
+            td = parse(this_date) # .astimezone(timezone.utc) # now a datetime object
+
+            if subtract_BST:
+                td -= timedelta(hours=1)
+            # now have a timezone date corrected for BST if required 
+            
+            charts.append((td, ds[2]))
+
         chart_run_date, _ = charts[0] # the datetime of the first chart is always the origin time of the
                                      # set of charts
-    
         # have we processed this set of charts?
         chart_run_check = ChartRun.objects.filter(date = chart_run_date)
        
