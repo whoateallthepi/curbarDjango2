@@ -116,87 +116,90 @@ class MetOfficeWeb(object):
             self.charts_URL = charts_URL    
 
     def fetch_charts(self):
-        
-        response = requests.get(self.charts_URL)
 
-        if response.status_code != 200:
-            return ConnectionError ("Failed to connect to URL %s", self.charts_URL)
-        
-        page = fromstring(response.text)
+        def scrape_charts (type=Chart.COLOUR_SURFACE, create_Chart_Run=True):
+            #
+            # B&W and colour charts basically use the same code. However the Chart_Run record only 
+            # needs creating once. So call for colour with create_Chart_Run = True
+            # then call for B&W with create_Chart_Run = False
+            # If called with create_Chart_Run = True and the chart run already exists - return False
+            # - indicates Chart_Run already exists and there is no need to get the charts. 
+            # Otherwise return True.
+            #
+            # Possible future fix - maybe make ChartRun unique in model as this is done in code, currently
+            #
+            response = requests.get(self.charts_URL)
 
-        ulist =  page.get_element_by_id('colourCharts')
-
-        charts = [] # will be a list of tuples (date,url)
-
-        for uu in ulist:
-            link = tostring(uu).decode('utf-8')
-            dd = (link[(link.find('data-value=') + 12)::])
-            ds = dd.split('"') # creates a list - zero element  is date, index 2 element is url
-
-            # following line is a British Summer Time fudge as dateparser baulks at UTC+ timezones
-            this_date = ds[0] 
-            subtract_BST = 'UTC+1' in this_date
-            if subtract_BST:
-                this_date = this_date.replace('(UTC+1)','UTC') # otherwise this messes up parse
-
-            td = parse(this_date) # .astimezone(timezone.utc) # now a datetime object
-
-            if subtract_BST:
-                td -= timedelta(hours=1)
-            # now have a timezone date corrected for BST if required 
+            if response.status_code != 200:
+                return ConnectionError ("Failed to connect to URL %s", self.charts_URL)
             
-            charts.append((td, ds[2]))
+            page = fromstring(response.text)
 
-        chart_run_date, _ = charts[0] # the datetime of the first chart is always the origin time of the
-                                     # set of charts
-        # have we processed this set of charts?
-        chart_run_check = ChartRun.objects.filter(date = chart_run_date)
-       
-        if chart_run_check:
-            # have already processed this run - exit
-            return
-        
-        # First do the colour charts 
+            match type:
+                case Chart.COLOUR_SURFACE:
+                    element_id = 'colourCharts'
+                case Chart.BW_SURFACE:
+                    element_id = 'bwCharts'    
+                case _:
+                    element_id = 'colourCharts'    
 
-        chart_run = ChartRun(date=chart_run_date) 
+            ulist =  page.get_element_by_id(element_id)
 
-        chart_run.save()
-       
-        for ch in charts:
-            chart_time, chart_uri = ch
-            chart = Chart(run=chart_run,
-                        type = Chart.COLOUR_SURFACE,
-                        #valid_from = chart_run_date,
-                        #valid_to = chart_time,
-                        image_url = chart_uri,
-                        forecast_time = chart_time )
-            #breakpoint()
-            chart.save() 
+            charts = [] # will be a list of tuples (date,url)
 
-        # BW chars are essentially the same - no need to save a chart run though
-        # could de-duplicate this code....
-        #     
-        ulist =  page.get_element_by_id('bwCharts')
+            for uu in ulist:
+                link = tostring(uu).decode('utf-8')
+                dd = (link[(link.find('data-value=') + 12)::])
+                ds = dd.split('"') # creates a list - zero element  is date, index 2 element is url
 
-        charts = [] # will be a list of tuples (date,url)
+                # following line is a British Summer Time fudge as dateparser baulks at UTC+ timezones
+                this_date = ds[0] 
+                subtract_BST = 'UTC+1' in this_date
+                if subtract_BST:
+                    this_date = this_date.replace('(UTC+1)','UTC') # otherwise this messes up parse
 
-        for uu in ulist:
-            link = tostring(uu).decode('utf-8')
-            dd = (link[(link.find('data-value=') + 12)::])
-            ds = dd.split('"') # creates a list - zero element  is date, index 2 element is url
-            charts.append((parse(ds[0]), ds[2]))
-                 
-        for ch in charts:
-            chart_time, chart_uri = ch
-            chart = Chart(run=chart_run,
-                        type = Chart.BW_SURFACE,
-                        #valid_from = chart_run_date,
-                        #valid_to = chart_time,
-                        image_url = chart_uri,
-                        forecast_time = chart_time )
-            #breakpoint()
-            chart.save() 
+                td = parse(this_date) # .astimezone(timezone.utc) # now a datetime object
 
+                if subtract_BST:
+                    td -= timedelta(hours=1)
+                # now have a timezone date corrected for BST if required 
+                
+                charts.append((td, ds[2]))
+
+            chart_run_date, _ = charts[0] # the datetime of the first chart is always the origin time of the
+                                        # set of charts
+
+            if create_Chart_Run:
+                if ChartRun.objects.filter(date = chart_run_date):
+                    print(f'Chart run already exists {chart_run_date} - exiting')
+                    return False
+
+                chart_run = ChartRun(date=chart_run_date) 
+                chart_run.save()
+
+            # re - obtain the ChartRun we need to hang the charts off
+            #     
+            chart_run = ChartRun.objects.get(date=chart_run_date) # should only be one but perhaps
+                                                                  # enforce in model?
+            for ch in charts:
+                chart_time, chart_uri = ch
+                chart = Chart(run=chart_run,
+                            type = type,
+                            #valid_from = chart_run_date,
+                            #valid_to = chart_time,
+                            image_url = chart_uri,
+                            forecast_time = chart_time )
+                #breakpoint()
+                chart.save() 
+
+            return True  # indicates a Chart_Run has been either created or was expected    
+        #
+        # here is the actual processing
+        #
+        if  scrape_charts( type = Chart.COLOUR_SURFACE, create_Chart_Run=True):
+            # We successfully scraped the colour charts now try the B&Ws
+            scrape_charts( type = Chart.BW_SURFACE, create_Chart_Run=False)
+            
 class DataPoint(object):
     
     def __init__(self, website = None, url = None, API_key = None):
