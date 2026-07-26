@@ -141,8 +141,7 @@ def regional_forecast_view(request, region_id):
         # Start with the regional forecast
         
         page = fromstring(webpage.text)
-
-        flist =  page.get_element_by_id('forecast-text')
+        flist =  page.get_element_by_id('regional-forecast')
         #breakpoint()
         big_head = flist.findall('.//h2')[0].text
         region_name = big_head[:big_head.index(" weather")]
@@ -153,7 +152,6 @@ def regional_forecast_view(request, region_id):
         # drag out the date of the forecast
         times = flist.findall('.//time')
         issued = parse(times[0].text)
-
         # Construct the forecast page 
         Forecast_section = namedtuple('Forecast_section', 'head text')
         forecast_sections = []
@@ -163,17 +161,21 @@ def regional_forecast_view(request, region_id):
             fs = Forecast_section(h.text, p.text)
             forecast_sections.append(fs) 
 
+        #return forecast_sections, region_name, issued
+
         # so far we have the regional forecast. Further ahead we need the national 
         # long range
+        
         page = fromstring(national_webpage.text)
 
         pars = page.findall('.//p')
         heads = page.findall('.//h3')
-
+        del(pars[0]) # first par is an enable javascript - we can ditch that
+        
         for h, p, _ in zip(heads, pars, (0,1)): # just use first two elements
-            
+
             fs = Forecast_section('UK outlook for ' + h.text, p.text)
-            forecast_sections.append(fs) 
+            forecast_sections.append(fs)
 
         return forecast_sections, region_name, issued
 
