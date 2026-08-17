@@ -16,8 +16,10 @@ class Nswws(object):
     
     def __init__(self, api_key, base_url,feeds_url, service_id=1):
         self.headers = { 
-            'x-api-key' : api_key
+            'accept' : 'application/atom+xml',
+            'ApiKey' : api_key
         }
+
         self.updates = []
         self.base_url = base_url
         self.feeds_url = feeds_url
@@ -31,8 +33,8 @@ class Nswws(object):
 
     def check(self, last_check):
         self.updates = []
-         
         self._conn.request("GET", self.feeds_url, headers=self.headers)
+        
         data = self._conn.getresponse().read()
         p = feedparser.parse(data)
         self.latest_list_url = p['feed']['links'][1]['href']

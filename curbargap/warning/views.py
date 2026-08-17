@@ -211,6 +211,7 @@ class FetchWarnings(View):
                     update_check.weatherType = wt
                     update_check. warningLikelihood = update['warningLikelihood']
                     update_check.warningLevel = decodeLevel(update['warningLevel'])
+             
                     update_check.warningStatus = decodeStatus(update['warningStatus'])
                     update_check.warningHeadline = update['warningHeadline']
                     update_check.whatToExpect = wte
